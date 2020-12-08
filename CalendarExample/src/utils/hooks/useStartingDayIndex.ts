@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getDayIndex, EWEEK_DAYS, TWeekDayIndexes } from '..';
+import { getDayIndex, EWEEK_DAYS, TWeekDayIndexes } from '../dateHelpers';
 
 export default function useStartingDayIndex(
   startingDay: string | EWEEK_DAYS

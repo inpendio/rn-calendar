@@ -1,15 +1,19 @@
-import React, { memo, ReactElement, useState } from 'react';
+import React, { memo, ReactElement, useState, useContext } from 'react';
 import { BaseConfigCtx } from '../contexts';
 import { TWeekDayIndexes } from '../utils';
 
 export type BaseConfigProps = {
-  children: ReactElement | ReactElement[];
-  startingDay?: number | string;
+  startingDay?: number | string | TWeekDayIndexes;
 };
 
-function BaseConfig({ children }: BaseConfigProps): ReactElement {
+function BaseConfig({
+  children,
+  startingDay,
+}: BaseConfigProps & IBaseProps): ReactElement {
+  const bc = useContext(BaseConfigCtx);
+  console.log(bc);
   const [startingDayIndex /* , setStartingDayIndex */] = useState(
-    0 as TWeekDayIndexes
+    (startingDay || 0) as TWeekDayIndexes
   );
   return (
     <BaseConfigCtx.Provider value={{ startingDayIndex }}>

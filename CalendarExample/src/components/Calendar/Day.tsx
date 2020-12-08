@@ -1,22 +1,10 @@
-import React, { memo, ReactElement, useContext } from 'react';
-import {
-  Pressable,
-  Text,
-  // TextProps,
-  // GestureResponderEvent,
-  PressableProps,
-} from 'react-native';
-// import invariant from 'ts-invariant';
-import { /* getDate, */ isSameDay } from 'date-fns';
-import { Day } from '../../utils';
-import { SelectedDateCtx } from '../../contexts';
+import React, { memo, ReactElement, useContext, useState } from 'react';
+import { Pressable, Text, PressableProps } from 'react-native';
+import { isSameDay } from 'date-fns';
+import { Day, isWithinInterval } from '../../utils';
+import { DayControllerCtx } from '../../contexts';
 
 type OwnProps = {
-  // date:Date,
-  // isSelected?:boolean,
-  // textProps?:TextProps,
-  // textPropSelected?:TextProps,
-  // onPress:((event: GestureResponderEvent) => void) | null | undefined,
   day: Day;
 };
 
@@ -25,8 +13,10 @@ type OtherProps = Omit<PressableProps, keyof OwnProps>;
 export type DayProps = OwnProps & OtherProps;
 
 function DayView({ day }: DayProps): ReactElement {
-  const { selectedDate } = useContext(SelectedDateCtx);
+  const { selectedDate, minDate, maxDate } = useContext(DayControllerCtx);
+  const [isSelectable] = useState(isWithinInterval(day.date, minDate, maxDate));
   const isSelected = isSameDay(day.date, selectedDate);
+  console.log(isWithinInterval(day.date, minDate, maxDate));
   return (
     <Pressable
       style={[
@@ -36,7 +26,9 @@ function DayView({ day }: DayProps): ReactElement {
       // {...other}
       // onPress={onPress}
     >
-      <Text>{day.label}</Text>
+      <Text style={[{ color: '#333' }, isSelectable ? {} : { color: 'red' }]}>
+        {day.label}
+      </Text>
     </Pressable>
   );
 }

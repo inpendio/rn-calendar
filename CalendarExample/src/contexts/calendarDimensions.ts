@@ -15,6 +15,8 @@ export interface ICalendarDimensionsCtx {
   updateRowHeight: (m: Month) => ((e: LayoutChangeEvent) => void) | undefined;
   updateWidth: () => ((e: LayoutChangeEvent) => void) | undefined;
   isSet: boolean;
+  height: number;
+  width: number;
 }
 export const CalendarDimensionsCtx = createContext<ICalendarDimensionsCtx>({
   rowHeight: 0,
@@ -27,4 +29,6 @@ export const CalendarDimensionsCtx = createContext<ICalendarDimensionsCtx>({
   updateWidth: () => undefined,
   isSet: false,
   getWidth: () => 0,
+  height: 0,
+  width: 0,
 });

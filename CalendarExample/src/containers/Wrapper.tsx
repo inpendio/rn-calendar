@@ -1,20 +1,34 @@
 import React, { memo, ReactElement } from 'react';
-import SelectedDate from './SelectedDate';
-import MonthController from './MonthController';
-import BaseConfig from './BaseConfig';
+import DayController, { DayControllerProps } from './DayController';
+import MonthController, { MonthControllerProps } from './MonthController';
+import BaseConfig, { BaseConfigProps } from './BaseConfig';
 import CalendarDimensions from './CalendarDimensions';
+import { parseDay, parseMonth } from '../utils';
 
-export type WrapperProps = {
-  children: ReactElement | ReactElement[];
-};
+export type WrapperProps = BaseConfigProps &
+  IBaseProps &
+  DayControllerProps &
+  MonthControllerProps & {
+    minDate?: Date | undefined | string;
+    maxDate?: Date | undefined | string;
+  };
 
 function Wrapper(props: WrapperProps): ReactElement {
   console.log(props);
+  const { startingDay, children, minDate, maxDate, minMonth, maxMonth } = props;
   return (
-    <BaseConfig>
-      <MonthController>
+    <BaseConfig startingDay={startingDay}>
+      <MonthController
+        maxMonth={parseMonth(maxMonth)}
+        minMonth={parseMonth(minMonth)}
+      >
         <CalendarDimensions>
-          <SelectedDate>{props.children}</SelectedDate>
+          <DayController
+            minDate={parseDay(minDate)}
+            maxDate={parseDay(maxDate)}
+          >
+            {children}
+          </DayController>
         </CalendarDimensions>
       </MonthController>
     </BaseConfig>

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { isAfter, isBefore, parse, set } from 'date-fns';
 import invariant from 'ts-invariant';
+import { DAY_FORMAT, MONTH_FORMAT } from '../consts';
 
 export enum EWEEK_DAYS {
   SUNDAY = 'sunday',
@@ -74,4 +76,39 @@ export function getDayIndex(day: string | EWEEK_DAYS): TWeekDayIndexes {
     `getDayIndex:Not a week day${wdIndex}`
   );
   return wdIndex as TWeekDayIndexes;
+}
+
+export function parseAndInvalidateDate(date, format, refDate): Date {
+  if (date instanceof Date) return date;
+  try {
+    return parse(date, format, refDate);
+  } catch {
+    throw new Error(
+      `Possible wrong date format. Accepting: ${MONTH_FORMAT} or ${DAY_FORMAT}`
+    );
+  }
+}
+
+export function parseMonth(date): Date | undefined {
+  if (!date) return undefined;
+  return parseAndInvalidateDate(
+    date,
+    MONTH_FORMAT,
+    set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
+  );
+}
+
+export function parseDay(date): Date | undefined {
+  if (!date) return undefined;
+  return parseAndInvalidateDate(
+    date,
+    DAY_FORMAT,
+    set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
+  );
+}
+
+export function isWithinInterval(date, minDate, maxDate): boolean {
+  if (minDate && isBefore(date, minDate)) return false;
+  if (maxDate && isAfter(date, maxDate)) return false;
+  return true;
 }

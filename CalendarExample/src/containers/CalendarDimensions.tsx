@@ -57,16 +57,17 @@ function CalendarDimensions({
     (m: Month) => {
       // console.log('updateMonthViewHeight', m);
       if (m.order !== MONTH_ORDER.PRESENT) return undefined;
-      if (addExtraRow === SET_STATE.UNSET) {
-        if (m.numberOfWeeks <= 5) setAddExtraRow(SET_STATE.TRUE);
-        else setAddExtraRow(SET_STATE.FALSE);
-      }
+
       if (!calendarHeight) {
         return ({
           nativeEvent: {
             layout: { height },
           },
         }: LayoutChangeEvent): void => {
+          if (addExtraRow === SET_STATE.UNSET) {
+            if (m.numberOfWeeks <= 5) setAddExtraRow(SET_STATE.TRUE);
+            else setAddExtraRow(SET_STATE.FALSE);
+          }
           setCalendarHeight(height);
         };
       }
@@ -120,6 +121,8 @@ function CalendarDimensions({
         updateWidth,
         isSet,
         getWidth,
+        width: getWidth(),
+        height: getHeight(),
       }}
     >
       {children}

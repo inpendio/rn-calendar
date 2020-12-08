@@ -1,10 +1,8 @@
 import { eachWeekOfInterval, endOfMonth, format, startOfMonth } from 'date-fns';
-import { MONTH_ORDER } from '../consts';
+import { MONTH_ORDER, MONTH_FORMAT } from '../consts';
 import { DateComponent, IDateComponent } from './classHelpers';
 import { getIndexForUnknown, TWeekDayIndexes } from './dateHelpers';
 import { Week } from './weekClass';
-
-const SIMPLE_FORMAT = 'MM-yyyy';
 
 export interface IMonthClass extends IDateComponent {
   startingDay: string | number | undefined;
@@ -28,9 +26,9 @@ export class Month extends DateComponent {
     const { startingDay, keyExtender, order } = data;
     this.startingDay = getIndexForUnknown(startingDay);
     this.order = order;
-    this.label = format(this.date, SIMPLE_FORMAT);
+    this.label = format(this.date, MONTH_FORMAT);
 
-    this.key = `${keyExtender || order}${this.type}_${this.label}`;
+    this.key = `${keyExtender || ''}${this.type}_${this.label}`;
     this.keyExtender = `forMonth_${this.label}`;
 
     this.constructWeeks();

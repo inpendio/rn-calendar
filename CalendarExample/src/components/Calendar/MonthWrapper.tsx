@@ -17,14 +17,31 @@ type WrapperProps = Omit<OwnProps, keyof OwnProps>;
 
 export type MonthWrapperProps = WrapperProps & OwnProps;
 
-function MonthWrapper({ order, style }: MonthWrapperProps): ReactElement {
+function MonthWrapper({
+  order,
+  style,
+}: MonthWrapperProps): ReactElement | null {
   const { getByOrder } = useContext(MonthControllerCtx);
-  const { updateMonthViewHeight, getWidth } = useContext(CalendarDimensionsCtx);
+  const {
+    updateMonthViewHeight,
+    // getWidth,
+    // getHeight,
+    // width,
+    // height,
+  } = useContext(CalendarDimensionsCtx);
   const month = getByOrder(order);
-
+  if (!month) return null;
   return (
     <View
-      style={[{ width: getWidth() }, style]}
+      style={[
+        {
+          paddingVertical: 5,
+          // flex: 1,
+          // width,
+          // height
+        },
+        style,
+      ]}
       onLayout={updateMonthViewHeight(month)}
       collapsable={false}
     >

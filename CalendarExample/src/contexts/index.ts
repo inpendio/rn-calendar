@@ -1,4 +1,4 @@
 export * from './monthController';
-export * from './selectedDate';
+export * from './dayController';
 export * from './baseConfig';
 export * from './calendarDimensions';

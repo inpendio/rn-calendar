@@ -8,7 +8,9 @@ import MonthWrapper from './MonthWrapper';
 export type CalendarProps = {};
 
 function Calendar({}: CalendarProps): ReactElement {
-  const { updateWidth, isSet, getHeight } = useContext(CalendarDimensionsCtx);
+  const { updateWidth, isSet, getHeight, height } = useContext(
+    CalendarDimensionsCtx
+  );
   const { keys, monthForward, monthBack } = useContext(MonthControllerCtx);
   const viewPager = useRef<ViewPager>();
   return (
@@ -16,8 +18,10 @@ function Calendar({}: CalendarProps): ReactElement {
       style={{
         backgroundColor: 'lime',
         // alignItems: 'flex-start',
-        justifyContent: 'flex-start',
-        flex: 1,
+        // justifyContent: 'flex-start',
+        // flex: 1,
+        flexGrow: 0,
+        flexShrink: 1,
       }}
       pointerEvents="box-none"
     >
@@ -28,7 +32,8 @@ function Calendar({}: CalendarProps): ReactElement {
             {
               flexShrink: 1,
               backgroundColor: 'wheat',
-              height: getHeight(),
+              // maxHeight:height
+              height,
             },
           ]}
           initialPage={1}
