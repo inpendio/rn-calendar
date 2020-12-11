@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
     "noEmit": true,
-    "target": "es6", 
-    "module": "esnext", 
+    "target": "es6",
+    "module": "esnext",
     "noImplicitAny": false,
     "preserveConstEnums": true,
     "baseUrl": ".",
-    "jsx": "react", 
-    "lib": ["dom", "es5", "es6", "es7", "es2017","esnext","dom.iterable"],
-    "allowSyntheticDefaultImports": true, 
+    "jsx": "react",
+    "lib": ["dom", "es5", "es6", "es7", "es2017", "esnext", "dom.iterable"],
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "allowJs": true,
     "declaration": true,
@@ -28,14 +28,10 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "isolatedModules": false
+    "isolatedModules": false,
+    "types": ["react-native", "react"]
   },
   "include": ["packages", "types", "scripts", "example"],
-  "exclude": [
-    "node_modules/**",
-    "build/**",
-    "coverage/**"
-  ],
-  "paths":{
-  }
+  "exclude": ["node_modules/**", "build/**", "coverage/**"],
+  "paths": {}
 }

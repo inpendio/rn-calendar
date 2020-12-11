@@ -38,13 +38,28 @@ function Calendar({}: CalendarProps): ReactElement {
           ]}
           initialPage={1}
           transitionStyle="curl"
-          onPageScroll={({ nativeEvent: { offset, position } }): void => {
-            if (position === 2 && offset === 0) {
+          onPageScroll={({ nativeEvent }): void => {
+            // console.log(nativeEvent);
+            const { offset, position } = nativeEvent;
+            if (offset !== 0) return;
+            if (position === 2) {
+              console.log('POS--> 2');
               monthForward();
-            } else if (position === 0 && offset === 0) {
+            } else if (position === 0) {
+              console.log('POS--> 0');
               monthBack();
+            } else if (position === 1) {
+              console.log('POS--> 1', viewPager);
+            } else {
+              console.log('sve ostalo');
             }
           }}
+          // onPageSelected={({ nativeEvent }): void => {
+          //   console.log(nativeEvent, keys);
+          // }}
+          // onPageScrollStateChanged={({ nativeEvent }): void => {
+          //   console.log(nativeEvent, keys);
+          // }}
           orientation="horizontal"
           scrollEnabled
         >

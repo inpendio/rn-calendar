@@ -20,7 +20,10 @@ function DayLabels({
     <WeekWrapper>
       {getWeekDaysFromIndex(startingDayIndex as TWeekDayIndexes).map((day) => {
         return (
-          <Text style={{ flex: 1 }} key={`week_names_${day}_${keyExtender}`}>
+          <Text
+            style={{ flex: 1, alignItems: 'center', textAlign: 'center' }}
+            key={`week_names_${day}_${keyExtender}`}
+          >
             {getShortName(day)}
           </Text>
         );

@@ -1,7 +1,14 @@
-import { eachWeekOfInterval, endOfMonth, format, startOfMonth } from 'date-fns';
+import {
+  eachWeekOfInterval,
+  endOfMonth,
+  format,
+  isSameMonth,
+  startOfMonth,
+} from 'date-fns';
 import { MONTH_ORDER, MONTH_FORMAT } from '../consts';
 import { DateComponent, IDateComponent } from './classHelpers';
 import { getIndexForUnknown, TWeekDayIndexes } from './dateHelpers';
+import { Day } from './dayClass';
 import { Week } from './weekClass';
 
 export interface IMonthClass extends IDateComponent {
@@ -19,6 +26,8 @@ export class Month extends DateComponent {
   order: MONTH_ORDER;
 
   label: string;
+
+  #days: Day[] = [];
 
   constructor(data: IMonthClass) {
     super(data);
@@ -47,5 +56,16 @@ export class Month extends DateComponent {
 
   get numberOfWeeks(): number {
     return this.weeks.length;
+  }
+
+  get days(): Day[] {
+    if (!this.#days || this.#days.length === 0) {
+      this.#days = this.weeks
+        .map((week) => {
+          return week.days.filter((day) => isSameMonth(day.date, this.date));
+        })
+        .flatMap((week) => week);
+    }
+    return this.#days;
   }
 }

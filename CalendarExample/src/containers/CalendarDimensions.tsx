@@ -106,7 +106,7 @@ function CalendarDimensions({
     return undefined;
   }, [availableWidth]);
 
-  console.log({ rowHeight, calendarHeight, availableWidth, isSet });
+  // console.log({ rowHeight, calendarHeight, availableWidth, isSet });
 
   return (
     <CalendarDimensionsCtx.Provider

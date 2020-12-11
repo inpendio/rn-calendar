@@ -4,3 +4,5 @@ export enum MONTH_ORDER {
   PRESENT = 'present',
   FUTURE = 'future__',
 }
+
+export const NO_PAST = 'no_past__';

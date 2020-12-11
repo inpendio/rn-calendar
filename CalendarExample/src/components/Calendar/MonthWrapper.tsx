@@ -22,13 +22,8 @@ function MonthWrapper({
   style,
 }: MonthWrapperProps): ReactElement | null {
   const { getByOrder } = useContext(MonthControllerCtx);
-  const {
-    updateMonthViewHeight,
-    // getWidth,
-    // getHeight,
-    // width,
-    // height,
-  } = useContext(CalendarDimensionsCtx);
+
+  const { updateMonthViewHeight } = useContext(CalendarDimensionsCtx);
   const month = getByOrder(order);
   if (!month) return null;
   return (

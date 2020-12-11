@@ -25,10 +25,11 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import Calendar from './src/components/Calendar/Calendar';
+// import Calendar from './src/components/Calendar/Calendar';
 import Wrapper from './src/containers/Wrapper';
-import Agenda from './src/components/Agenda';
+// import Agenda from './src/components/Agenda/Agenda';
 import BaseConfig from './src/containers/BaseConfig';
+import { Calendar, Agenda } from './src/components';
 
 declare const global: { HermesInternal: null | {} };
 
@@ -36,9 +37,14 @@ const App = () => {
   return (
     <View style={{ flex: 1, backgroundColor: 'red' }}>
       <StatusBar barStyle="dark-content" />
-      <Wrapper startingDay={6} minDate="03-12-2020" maxMonth="02-2021">
+      <Wrapper
+        startingDay={6}
+        minDate="03-12-2020"
+        maxMonth="04-2021"
+        pastScrollRange={7}
+      >
         <Calendar />
-        {/* <Agenda /> */}
+        <Agenda />
       </Wrapper>
     </View>
   );

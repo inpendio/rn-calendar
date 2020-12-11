@@ -2,7 +2,8 @@ import React, { memo, ReactElement } from 'react';
 import DayController, { DayControllerProps } from './DayController';
 import MonthController, { MonthControllerProps } from './MonthController';
 import BaseConfig, { BaseConfigProps } from './BaseConfig';
-import CalendarDimensions from './CalendarDimensions';
+// import CalendarDimensions from './CalendarDimensions';
+// import AgendaListWrapper from './AgendaListController';
 import { parseDay, parseMonth } from '../utils';
 
 export type WrapperProps = BaseConfigProps &
@@ -14,25 +15,44 @@ export type WrapperProps = BaseConfigProps &
   };
 
 function Wrapper(props: WrapperProps): ReactElement {
-  console.log(props);
-  const { startingDay, children, minDate, maxDate, minMonth, maxMonth } = props;
+  console.log('@Wrapper', props);
+  const {
+    startingDay,
+    children,
+    minDate,
+    maxDate,
+    minMonth,
+    maxMonth,
+    pastScrollRange,
+    futureScrollRange,
+  } = props;
   return (
-    <BaseConfig startingDay={startingDay}>
+    <BaseConfig startingDay={startingDay} key="BaseConfig-providerComponents">
       <MonthController
+        key="MonthController-providerComponents"
         maxMonth={parseMonth(maxMonth)}
         minMonth={parseMonth(minMonth)}
+        pastScrollRange={pastScrollRange}
+        futureScrollRange={futureScrollRange}
       >
-        <CalendarDimensions>
-          <DayController
-            minDate={parseDay(minDate)}
-            maxDate={parseDay(maxDate)}
-          >
-            {children}
-          </DayController>
-        </CalendarDimensions>
+        <DayController
+          key="DayController-providerComponents"
+          minDate={parseDay(minDate)}
+          maxDate={parseDay(maxDate)}
+        >
+          {children}
+        </DayController>
       </MonthController>
     </BaseConfig>
   );
 }
 
 export default memo(Wrapper);
+
+/* 
+<CalendarDimensions key="CalendarDimensions-providerComponents">
+            <AgendaListWrapper key="AgendaListWrapper-providerComponents">
+              {children}
+            </AgendaListWrapper>
+          </CalendarDimensions>
+*/

@@ -14,7 +14,6 @@
     "date-fns": "^2.16.1",
     "react": "16.13.1",
     "react-native": "0.63.3",
-    "react-native-gesture-handler": "^1.9.0",
     "ts-invariant": "^0.5.1"
   },
   "devDependencies": {

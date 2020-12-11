@@ -23,6 +23,7 @@ function WeekWrapper({
           justifyContent: 'space-between',
           paddingVertical: 5,
           paddingHorizontal: 10,
+          flexWrap: 'nowrap',
         },
         style,
       ]}
