@@ -8,9 +8,13 @@ import {
   // ViewabilityConfigCallbackPair,
 } from 'react-native';
 import { LIST_CONF } from '../consts';
+import { AgendaItemController } from './agendaItemControllerClass';
+import { AgendaRespondController } from './agendaRespondClass';
+import { AgendaScrollController } from './agendaScrollClass';
+import { LockingAction } from './classHelpers';
 
 import { Month } from './monthClass';
-import { ItemSelectedCallback } from './types';
+import { Callback, ItemSelectedCallback } from './types';
 
 type ScrollToOffsetFunc = () => void;
 type CalculatedScrollToOffsetFunc = () => void;
@@ -23,228 +27,120 @@ interface IOnViewItemChangeInfo {
   //   viewabilityConfig: ViewabilityConfig;
 }
 
+type OnChangeArgs = {
+  date: Date;
+  rawData: IOnViewItemChangeInfo;
+};
+
 export class AgendaListController {
-  rowLayouts: Map<number, LayoutRectangle> = new Map();
+  #itemController: AgendaItemController;
+
+  #scrollController: AgendaScrollController;
+
+  #respondController: AgendaRespondController;
 
   forMonth: string;
 
   month: Month;
 
+  #ready: boolean = true;
+
   #listRef: RefObject<FlatList<any>> = createRef<FlatList<any>>();
 
-  //   #list: FlatList<any> | null = null;
+  #lockers: Set<LockingAction> = new Set();
 
-  #daysInMonth: number;
-
-  #rowsReady: boolean = false;
-
-  #listReady: boolean = false;
-
-  #queue: QueueFuncTypes[] = [];
-
-  #queueTimer: number = 0;
-
-  #isLocked: boolean = false;
-
-  #isDrag: boolean = false;
-
-  #unlockTimer: number = 0;
-
-  #selecterTime: number = 0;
-
-  #onItemSelectedListeners: Set<ItemSelectedCallback> = new Set();
+  #locked: boolean = false;
 
   constructor(month: Month, caller?: string) {
     this.forMonth = month.label;
     this.month = month;
-    this.#daysInMonth = month.days.length;
-    // this.#list = this.#listRef.current;
+    this.#itemController = new AgendaItemController(
+      month.days.length,
+      this.onReadyCheck
+    );
+    this.#scrollController = new AgendaScrollController(this.#listRef);
+    this.#respondController = new AgendaRespondController(this.#listRef);
+    this.#lockers.add(this.#scrollController);
+    this.#lockers.add(this.#respondController);
+    this.#scrollController.onLockListener(
+      this.lockListener(this.#scrollController)
+    );
     console.log('~ ~ ~ ~ ~ @CONSTRUCTOR', month.label, caller);
   }
 
-  private recheckReady = (): void => {
-    if (!this.#listReady && this.#listRef.current) this.#listReady = true;
+  private onReadyCheck = (): void => {
+    if (!this.#itemController.isReady && this.#listRef.current)
+      this.#ready = true;
   };
 
-  private lock = (): void => {
-    this.#isLocked = true;
-
-    this.#listRef.current?.setNativeProps({
-      scrollEnabled: false,
-    });
-    console.log(
-      '_________________________________ LOCKED ______________________________'
-    );
-  };
-
-  private unlock = (): void => {
-    this.#isLocked = false;
-
-    this.#listRef.current?.setNativeProps({
-      scrollEnabled: true,
-    });
-    console.log(
-      '_________________________________ UNLOCKED ______________________________'
-    );
-  };
-
-  private dragLock = (): void => {
-    this.#isDrag = false;
-  };
-
-  private dragUnlock = (): void => {
-    this.#isDrag = false;
-  };
-
-  #runQueue = (): void => {
-    console.log(
-      '@#runQueue',
-      this.#queue.length,
-      this.#rowsReady,
-      this.#listReady
-    );
-    if (this.#queue.length === 0) return;
-    if (!this.#listRef.current) console.log('_____   NOT READY   _____');
-    if (this.#rowsReady && this.#listReady) {
-      this.lock();
-      while (this.#queue.length) {
-        const exec = this.#queue.pop() as QueueFuncTypes;
-        exec();
-      }
-      // console.log('native scroll::', {
-      //   native: this.#listRef.current?.getNativeScrollRef(),
-      //   responder: this.#listRef.current?.getScrollResponder(),
-      // });
-
-      this.debouncedUnlocker();
-    } else {
-      if (this.#queueTimer) clearTimeout(this.#queueTimer);
-      // @ts-ignore
-      this.#queueTimer = setTimeout(this.#runQueue, 100);
-    }
-  };
-
-  private calculateOffset = (index: number): number => {
-    let offset = 0;
-    for (let i = 0; i <= index - 1; i++) {
-      offset += this.rowLayouts.get(i)?.height ?? 0;
-    }
-
-    return offset;
-  };
-
-  private scrollListTo = (offset: number): void => {
-    if (!this.#listRef.current)
-      console.log('@scrollListTo_____   NOT READY   _____listRef');
-    this.#listRef.current?.scrollToOffset({ offset });
-  };
-
-  private selectItem = ({
-    viewableItems,
-    changed,
-  }: IOnViewItemChangeInfo): void => {
-    console.log('@selectItem', { viewableItems, changed });
-    if (viewableItems.length > 0 && !this.#isLocked) {
-      const {
-        index,
-        item: { date },
-      } = viewableItems[0];
-      if (index || index === 0) this.scrollToIndex(index);
-      this.#onItemSelectedListeners.forEach((cb) => {
-        cb(date);
+  private lockListener = (caller: LockingAction) => {
+    return (isLocked: boolean): void => {
+      this.#locked = isLocked;
+      this.#lockers.forEach((la) => {
+        if (la !== caller && isLocked) la.lock();
+        else if (la !== caller && !isLocked) la.unlock();
       });
-    }
+    };
   };
 
-  private debouncedUnlocker = (time = 40): void => {
-    clearTimeout(this.#unlockTimer);
-    // @ts-ignore
-    this.#unlockTimer = setTimeout(this.unlock, time);
+  // #region  public
+
+  scrollToIndex = (index): void => {
+    if (!this.#ready) setTimeout(this.scrollToIndex, 50, index);
+    this.#respondController.scrollToOffset(
+      this.#itemController.getOffset(index)
+    );
   };
 
-  private debouncedItemSelect = (info: IOnViewItemChangeInfo): void => {
-    clearTimeout(this.#selecterTime);
-    // @ts-ignore
-    this.#selecterTime = setTimeout(this.selectItem, 80, info);
-  };
+  onLayoutForIndex = (index): any =>
+    this.#itemController.onLayoutForIndex(index);
 
-  private onItemViewChange = (info: IOnViewItemChangeInfo): void => {
-    // const { viewableItems, changed /* viewabilityConfig */ } = info;
-    if (this.#isLocked) {
-      console.log('@onItemViewChange         #isLocked');
-      // this.debouncedUnlocker(20);
-    } else {
-      console.log('FREEEEEEE', info);
-      this.debouncedItemSelect(info);
-    }
-  };
-
-  private onScroll = (/* { nativeEvent } */): void => {
-    // console.log('@onScroll', nativeEvent);
-    if (this.#isLocked) {
-      this.debouncedUnlocker(40);
-    } else {
-      // console.log('@onScroll', nativeEvent);
-    }
-  };
-
-  onLayoutForIndex = (index: number) => ({
-    nativeEvent: { layout },
-  }: LayoutChangeEvent): void => {
-    this.rowLayouts.set(index, layout);
-    if (this.rowLayouts.size >= this.#daysInMonth - 1) this.#rowsReady = true;
-    this.recheckReady();
-  };
-
-  scrollToIndex = (index: number): void => {
-    console.log('@scrollToIndex', index, this);
-    this.lock();
-    this.#queue.push(() => {
-      this.scrollListTo(this.calculateOffset(index));
-    });
-    // this.lock();
-    this.#runQueue();
-  };
+  get listRef(): RefObject<FlatList<any>> {
+    console.log('@listRef/get:: called');
+    // this.#listReady = true;
+    // this.onReadyCheck();
+    return this.#listRef;
+  }
 
   get key(): string {
     return `AgendaList${this.forMonth}`;
   }
 
-  get listRef(): RefObject<FlatList<any>> {
-    console.log('@listRef/get:: called');
-    this.#listReady = true;
-    this.recheckReady();
-    return this.#listRef;
-  }
-
-  addOnItemSelected = (callback?: ItemSelectedCallback): void => {
-    if (callback) this.#onItemSelectedListeners.add(callback);
-  };
-
   get flatListProps(): any {
     return {
       viewabilityConfig: LIST_CONF.VIEWABILITY_CONF,
-      onViewableItemsChanged: this.onItemViewChange,
       key: this.key,
-      onScroll: this.onScroll,
+
+      onViewableItemsChanged: (/* info */): void => {
+        this.#respondController.onViewableItemsChanged();
+        this.#scrollController.onViewableItemsChanged();
+      },
+      onScroll: (): void => {
+        this.#respondController.onScroll();
+        this.#scrollController.onScroll();
+      },
       // called when fingers starts drag
-      onScrollBeginDrag: ({ nativeEvent }): void => {
-        console.log('@onScrollBeginDrag', nativeEvent);
-        this.#isDrag = true;
+      onScrollBeginDrag: (event): void => {
+        this.#respondController.onScrollBeginDrag();
+        this.#scrollController.onScrollBeginDrag(event);
       },
       // called when finger drag ends ( finger is lifted)
-      onMomentumScrollEnd: ({ nativeEvent }): void => {
-        console.log('@onMomentumScrollEnd', { nativeEvent });
-        if (this.#isDrag) this.#isDrag = false;
+      onMomentumScrollEnd: (event): void => {
+        this.#respondController.onMomentumScrollEnd();
+        this.#scrollController.onMomentumScrollEnd(event);
       },
       // finger is lifted, but view is still scrolling
-      // onScrollEndDrag: ({ nativeEvent }): void => {
-      //   console.log('@onScrollEndDrag', nativeEvent);
-      // },
+      onScrollEndDrag: (): void => {
+        this.#respondController.onScrollEndDrag();
+        this.#scrollController.onScrollEndDrag();
+      },
       // scrolling stopped
-      // onMomentumScrollBegin: ({ nativeEvent }): void => {
-      //   console.log('@onMomentumScrollBegin', { nativeEvent });
-      // },
+      onMomentumScrollBegin: (): void => {
+        this.#respondController.onMomentumScrollBegin();
+        this.#scrollController.onMomentumScrollBegin();
+      },
     };
   }
+
+  // #endregion
 }

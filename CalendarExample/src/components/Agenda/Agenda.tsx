@@ -9,7 +9,7 @@ import {
 import { getDate, isSameMonth } from 'date-fns';
 import { DayControllerCtx, AgendaControllerCtx } from '../../contexts';
 import Item from './Item';
-import { ItemSelectedCallback } from '../../utils/types';
+// import { ItemSelectedCallback } from '../../utils/types';
 
 export type OwnProps = {
   style?: StyleProp<ViewStyle>;
@@ -45,7 +45,10 @@ function Agenda({
   useEffect(() => {
     if (listController) {
       listController.addOnItemSelected(onDateSelected);
-      listController.addOnItemSelected((d) => setSelectedDate(d));
+      // listController.addOnItemSelected((d) => setSelectedDate(d));
+      listController.addOnItemViewChanged(({ date }): void =>
+        setSelectedDate(date)
+      );
     }
   }, [listController]);
 

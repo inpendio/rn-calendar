@@ -86,6 +86,7 @@ chrome-user-data
 !.yarn/sdks
 !.yarn/versions
 
+
 */node_modules/
 */android/app/build
 */android/local.properties

@@ -1,6 +1,6 @@
 {
-  "name": "calendar",
-  "version": "1.0.0",
+  "name": "@inpendio/rn-calendar",
+  "version": "0.1.0",
   "main": "index.js",
   "author": "Prpa",
   "license": "MIT",
@@ -35,5 +35,36 @@
   "workspaces": [
     "packages/*",
     "example/"
-  ]
+  ],
+  "description": "Set of tools for creating calendars and agenda lists in react-native",
+  "dependencies": {
+    "eslint-config-airbnb": "^18.2.0",
+    "ast-types-flow": "^0.0.7",
+    "babel-eslint": "^10.1.0",
+    "eslint-plugin-flowtype": "^3.13.0",
+    "eslint-config-react-app": "^5.2.1",
+    "eslint-import-resolver-node": "^0.3.4",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-module-utils": "^2.6.0",
+    "eslint-visitor-keys": "^2.0.0",
+    "prop-types": "^15.7.2",
+    "eslint-scope": "^5.1.1",
+    "rollup-plugin-typescript2": "^0.27.3",
+    "eslint-plugin-react-native-globals": "^0.1.2",
+    "eslint-utils": "^2.1.0",
+    "mime-types": "^2.1.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inpendio/rn-calendar.git"
+  },
+  "keywords": [
+    "react-native",
+    "calendar",
+    "agenda"
+  ],
+  "bugs": {
+    "url": "https://github.com/inpendio/rn-calendar/issues"
+  },
+  "homepage": "https://github.com/inpendio/rn-calendar#readme"
 }

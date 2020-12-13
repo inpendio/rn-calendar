@@ -22,9 +22,6 @@ function AgendaListWrapper({
   useEffect(() => {
     setController(new AgendaListController(currentMonth, 'useEffect'));
   }, [currentMonth]);
-  // useEffect(() => {
-  //   console.log('AgendaListWrapper F  .  I  .  R  .  S  .  T  ');
-  // }, []);
 
   return (
     <AgendaControllerCtx.Provider

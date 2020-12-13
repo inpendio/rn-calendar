@@ -1,1 +1,1 @@
-export type ItemSelectedCallback = (date: Date) => void;
+export type Callback<T> = (data: T) => void;
