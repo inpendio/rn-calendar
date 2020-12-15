@@ -9,10 +9,10 @@ import {
 } from 'react-native';
 import invariant from 'ts-invariant';
 // import { LIST_CONF } from '../consts';
-import { LockingAction } from './classHelpers';
+// import { LockingAction } from './classHelpers';
 
 // import { Month } from './monthClass';
-import { Callback /* , ItemSelectedCallback  */ } from './types';
+import { Callback, LockingAction, LockCallback } from './types';
 
 export class AgendaScrollController implements LockingAction {
   #isDrag: boolean = false;
@@ -21,7 +21,7 @@ export class AgendaScrollController implements LockingAction {
 
   #onEndAction: Callback<void> = (): void => {};
 
-  #lockListener: Callback<boolean> = (): void => {};
+  #lockListener: LockCallback = () => {};
 
   #listRef: RefObject<FlatList<any>>;
 
@@ -29,25 +29,40 @@ export class AgendaScrollController implements LockingAction {
     this.#listRef = list;
   }
 
-  private onEnd = (): void => {
-    this.#onEndAction();
-  };
+  // private onEnd = (): void => {
+  //   this.#onEndAction();
+  // };
 
   private notifyLockListener = (): void => {
-    this.#lockListener(this.#isDrag);
+    this.#lockListener(this.#isDrag, this);
   };
 
   private onDragStart = (): void => {
-    invariant(this.#locked, 'Controller is locked, drag should be disabled');
+    console.log('@onDragStart');
+    invariant(!this.#locked, 'Controller is locked, drag should be disabled');
     this.#isDrag = true;
     this.notifyLockListener();
   };
 
   private onDragEnd = (): void => {
-    invariant(this.#locked, 'Controller is locked, drag should be disabled');
-    if (this.#isDrag) this.#isDrag = false;
-    this.notifyLockListener();
+    invariant(!this.#locked, 'Controller is locked, drag should be disabled');
+
+    if (this.#isDrag) {
+      // because onViewableItemsChanged is called a tick later then onScrollDragEnd/onMomentumScrollEnd
+      // we call unlock through timeout
+      // this way AgendaController will still think that user is dragging and will call onViewableItemsChanged
+      // check AgendaListController/onViewableItemsChanged
+      setTimeout(() => {
+        console.log('Disabling Active');
+        this.#isDrag = false;
+        this.notifyLockListener();
+      }, 50);
+    }
   };
+
+  get isActive(): boolean {
+    return this.#isDrag;
+  }
 
   // #region overrides
 
@@ -98,7 +113,11 @@ export class AgendaScrollController implements LockingAction {
     this.onDragEnd();
   };
 
-  onScrollEndDrag = (): void => {};
+  onScrollEndDrag = (): void => {
+    console.log('@onScrollEndDrag');
+  };
 
-  onMomentumScrollBegin = (): void => {};
+  onMomentumScrollBegin = (): void => {
+    console.log('@onMomentumScrollBegin');
+  };
 }

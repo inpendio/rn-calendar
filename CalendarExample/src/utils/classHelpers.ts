@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
-import { Callback } from './types';
+import { Callback, LockCallback } from './types';
 
 export interface IDateComponent {
   date: Date;
@@ -20,20 +20,20 @@ export abstract class DateComponent {
   }
 }
 
-export interface LockingAction {
-  lock: () => void;
-  unlock: () => void;
-  // run: (callback: Callback<void>) => void;
-  // onEnd: () => void;
+// export interface LockingAction {
+//   lock: () => void;
+//   unlock: () => void;
+//   // run: (callback: Callback<void>) => void;
+//   // onEnd: () => void;
 
-  onLockListener: (callback: Callback<void>) => void;
+//   onLockListener: (callback: LockCallback) => void;
 
-  // flatListProps: any;
+//   // flatListProps: any;
 
-  onViewableItemsChanged: (any) => void;
-  onScroll: (any) => void;
-  onScrollBeginDrag: (any) => void;
-  onMomentumScrollEnd: (any) => void;
-  onScrollEndDrag: (any) => void;
-  onMomentumScrollBegin: (any) => void;
-}
+//   onViewableItemsChanged: (any) => void;
+//   onScroll: (any) => void;
+//   onScrollBeginDrag: (any) => void;
+//   onMomentumScrollEnd: (any) => void;
+//   onScrollEndDrag: (any) => void;
+//   onMomentumScrollBegin: (any) => void;
+// }

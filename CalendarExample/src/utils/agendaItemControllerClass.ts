@@ -19,11 +19,14 @@ export class AgendaItemController {
     nativeEvent: { layout },
   }: LayoutChangeEvent): void => {
     this.#rowLayouts.set(index, layout);
-    if (this.#rowLayouts.size >= this.#days - 1) this.#rowsReady = true;
-    this.#onReady();
+    if (this.#rowLayouts.size >= this.#days - 1) {
+      this.#rowsReady = true;
+      this.#onReady();
+    }
   };
 
   getOffset = (index: number): number => {
+    console.log('@getOffset', this.#rowsReady, index, this);
     let offset = 0;
     for (let i = 0; i <= index - 1; i++) {
       offset += this.#rowLayouts.get(i)?.height ?? 0;

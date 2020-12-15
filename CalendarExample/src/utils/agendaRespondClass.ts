@@ -9,10 +9,10 @@ import {
 } from 'react-native';
 // import invariant from 'ts-invariant';
 // import { LIST_CONF } from '../consts';
-import { LockingAction } from './classHelpers';
+// import { LockingAction } from './classHelpers';
 
 // import { Month } from './monthClass';
-import { Callback /* , ItemSelectedCallback */ } from './types';
+import { LockingAction, LockCallback } from './types';
 
 export class AgendaRespondController implements LockingAction {
   // flatListProps:any = {};
@@ -23,7 +23,7 @@ export class AgendaRespondController implements LockingAction {
 
   //   #onEndAction: Callback<void> = () => {};
 
-  #lockListener: Callback<boolean> = () => {};
+  #lockListener: LockCallback = () => {};
 
   #listRef: RefObject<FlatList<any>>;
 
@@ -34,7 +34,7 @@ export class AgendaRespondController implements LockingAction {
   }
 
   private notifyLockListener = (): void => {
-    this.#lockListener(this.#isRunning);
+    this.#lockListener(this.#isRunning, this);
   };
 
   private debouncedUnlocker = (time = 40): void => {
@@ -54,6 +54,7 @@ export class AgendaRespondController implements LockingAction {
   };
 
   scrollToOffset = (offset: number): void => {
+    console.log('@scrollToOffset', offset, this);
     if (this.isLocked) return;
     this.startRun();
     this.#listRef.current?.scrollToOffset({ offset });
