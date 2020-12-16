@@ -24,7 +24,6 @@ export type CalendarDimensionsProps = {
 function CalendarDimensions({
   children,
 }: CalendarDimensionsProps): ReactElement {
-  // const { currentMonth } = useContext(CurrentMonthCtx);
   const [isSet, setIsSet] = useState(false);
   /**
    * Month can have 5 or 6 week rows.
@@ -55,7 +54,6 @@ function CalendarDimensions({
 
   const updateMonthViewHeight = useCallback(
     (m: Month) => {
-      // console.log('updateMonthViewHeight', m);
       if (m.order !== MONTH_ORDER.PRESENT) return undefined;
 
       if (!calendarHeight) {
@@ -77,7 +75,6 @@ function CalendarDimensions({
   );
   const updateRowHeight = useCallback(
     (m: Month) => {
-      // console.log('updateRowHeight', m);
       if (m.order !== MONTH_ORDER.PRESENT) return undefined;
       if (!rowHeight) {
         return ({
@@ -105,8 +102,6 @@ function CalendarDimensions({
     }
     return undefined;
   }, [availableWidth]);
-
-  // console.log({ rowHeight, calendarHeight, availableWidth, isSet });
 
   return (
     <CalendarDimensionsCtx.Provider

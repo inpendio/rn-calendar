@@ -39,7 +39,8 @@
     // "react/jsx-one-expression-per-line": [2, { "allow": "single-child" }],
     "react/destructuring-assignment": 0,
     "react/jsx-props-no-spreading": 0,
-    "no-plusplus": 0
+    "no-plusplus": 0,
+    "react/require-default-props": 0
     // "react/jsx-closing-bracket-location": [
     //   1,
     //   { "selfClosing": "line-aligned", "nonEmpty": "tag-aligned" }

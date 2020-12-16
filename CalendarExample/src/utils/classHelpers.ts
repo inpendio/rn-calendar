@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
-import { Callback, LockCallback } from './types';
+// import { Callback, LockCallback } from './types';
 
 export interface IDateComponent {
   date: Date;

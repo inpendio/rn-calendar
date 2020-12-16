@@ -1,27 +1,12 @@
-import { RefObject /* , createRef  */ } from 'react';
-import {
-  //   ViewToken,
-  FlatList,
-  //   LayoutChangeEvent,
-  //   LayoutRectangle,
-  // ViewabilityConfig,
-  // ViewabilityConfigCallbackPair,
-} from 'react-native';
-// import invariant from 'ts-invariant';
-// import { LIST_CONF } from '../consts';
-// import { LockingAction } from './classHelpers';
+import { RefObject } from 'react';
+import { FlatList } from 'react-native';
 
-// import { Month } from './monthClass';
 import { LockingAction, LockCallback } from './types';
 
 export class AgendaRespondController implements LockingAction {
-  // flatListProps:any = {};
-
   #locked: boolean = false;
 
   #isRunning: boolean = false;
-
-  //   #onEndAction: Callback<void> = () => {};
 
   #lockListener: LockCallback = () => {};
 
@@ -54,7 +39,6 @@ export class AgendaRespondController implements LockingAction {
   };
 
   scrollToOffset = (offset: number): void => {
-    console.log('@scrollToOffset', offset, this);
     if (this.isLocked) return;
     this.startRun();
     this.#listRef.current?.scrollToOffset({ offset });
@@ -68,16 +52,10 @@ export class AgendaRespondController implements LockingAction {
   // #region overrides
   lock = (): void => {
     this.#locked = true;
-    console.log(
-      '_________________________________ RESPONDER LOCKED ______________________________'
-    );
   };
 
   unlock = (): void => {
     this.#locked = false;
-    console.log(
-      '_________________________________ RESPONDER UNLOCKED ______________________________'
-    );
   };
 
   onLockListener = (cb): void => {

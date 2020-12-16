@@ -1,6 +1,6 @@
+import { ComponentType, ReactElement } from 'react';
 import { ViewToken } from 'react-native';
 import { Day } from './dayClass';
-// import { LockingAction } from './classHelpers';
 
 export type Callback<T> = (data: T) => void;
 export type LockCallback = (T: boolean, caller: LockingAction) => void;
@@ -31,8 +31,21 @@ export interface ViewTokenPrecise<T> extends ViewToken {
   section?: any;
 }
 
+export type RenderFunction = (props: any) => ReactElement;
+type RenderComponent = ComponentType<any>;
+
+export type RenderProp = RenderFunction | RenderComponent;
+
 export interface IOnViewItemChangeArgs {
   viewableItems: Array<ViewTokenPrecise<Day>>;
   changed: Array<ViewToken>;
   //   viewabilityConfig: ViewabilityConfig;
 }
+
+export type CalendarEvent = {
+  title: string;
+  startTime: Date;
+  endTime?: Date;
+  allDay?: boolean;
+  data: any;
+};

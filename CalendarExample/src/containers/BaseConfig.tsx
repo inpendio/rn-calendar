@@ -1,11 +1,4 @@
-import React, {
-  memo,
-  ReactElement,
-  useState,
-  useContext,
-  Children,
-  isValidElement,
-} from 'react';
+import React, { memo, ReactElement, useState } from 'react';
 import { BaseConfigCtx } from '../contexts';
 import { TWeekDayIndexes } from '../utils';
 
@@ -17,11 +10,6 @@ function BaseConfig({
   children,
   startingDay,
 }: BaseConfigProps & IBaseProps): ReactElement {
-  console.log('@BaseConfig', {
-    children,
-    React,
-    charr: Children.toArray(children),
-  });
   const [startingDayIndex /* , setStartingDayIndex */] = useState(
     (startingDay || 0) as TWeekDayIndexes
   );

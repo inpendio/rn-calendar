@@ -21,7 +21,6 @@ function getCalculatedMonth(
       isSameMonth(current, comparator))
   )
     return null;
-  // console.log('getCalculatedMonth', { current, comparator, calcFunc, rest });
   return new Month({
     date: calcFunc(current, 1),
     startingDay: rest.startingDayIndex,
@@ -52,8 +51,6 @@ function calculateMaxMonth(
 
   return out;
 }
-
-// const FORMAT = 'MM-yyyy';
 
 export type MonthControllerProps = {
   minMonth?: Date | undefined;
@@ -113,27 +110,10 @@ function MonthController({
     newCurrent.order = MONTH_ORDER.PRESENT;
     const newPast = currentMonth;
     newPast.order = MONTH_ORDER.PAST;
-    // const newFuture = getCalculatedMonth(
-    //   newCurrent.date,
-    //   finalMaxMonth,
-    //   addMonths,
-    //   { order: MONTH_ORDER.FUTURE, startingDayIndex }
-    // );
+
     setPreviousMonth(newPast);
     setCurrentMonth(newCurrent);
     setNextMonth(newFuture);
-
-    /* if (newFuture !== null) {
-      setPreviousMonth(newPast);
-      setCurrentMonth(newCurrent);
-      setNextMonth(newFuture);
-    } else {
-      // we changed the order of this classes ( becuase we did not cloned object)
-      // now, when we know there is no more months in this direction, we need to put order back as it was
-
-      nextMonth.order = MONTH_ORDER.FUTURE;
-      currentMonth.order = MONTH_ORDER.PRESENT;
-    } */
   };
   const monthBack = (): void => {
     if (!previousMonth) return;
@@ -148,25 +128,10 @@ function MonthController({
     newCurrent.order = MONTH_ORDER.PRESENT;
     const newFuture = currentMonth;
     newFuture.order = MONTH_ORDER.FUTURE;
-    // const newPast = getCalculatedMonth(
-    //   newCurrent.date,
-    //   finalMinMonth,
-    //   subMonths,
-    //   { order: MONTH_ORDER.PAST, startingDayIndex }
-    // );
 
     setPreviousMonth(newPast);
     setCurrentMonth(newCurrent);
     setNextMonth(newFuture);
-
-    /* if (newPast !== null) {
-      setPreviousMonth(newPast);
-      setCurrentMonth(newCurrent);
-      setNextMonth(newFuture);
-    } else {
-      previousMonth.order = MONTH_ORDER.PAST;
-      currentMonth.order = MONTH_ORDER.PRESENT;
-    } */
   };
 
   const getByOrder = (order: MONTH_ORDER): Month | null => {
@@ -181,14 +146,6 @@ function MonthController({
         return currentMonth;
     }
   };
-
-  // console.log({
-  //   currentMonth,
-  //   previousMonth,
-  //   nextMonth,
-  //   finalMaxMonth,
-  //   finalMinMonth,
-  // });
 
   const keys = {
     past: `__${

@@ -1,46 +1,19 @@
 import { RefObject, createRef } from 'react';
-import {
-  ViewToken,
-  FlatList,
-  LayoutChangeEvent,
-  LayoutRectangle,
-  // ViewabilityConfig,
-  // ViewabilityConfigCallbackPair,
-} from 'react-native';
+import { FlatList } from 'react-native';
 import { LIST_CONF } from '../consts';
 import { AgendaItemController } from './agendaItemControllerClass';
 import { AgendaRespondController } from './agendaRespondClass';
 import { AgendaScrollController } from './agendaScrollClass';
-import { Day } from './dayClass';
-// import {  } from './classHelpers';
 
 import { Month } from './monthClass';
-import {
-  Callback,
-  IOnViewItemChangeArgs,
-  LockingAction,
-  ViewTokenPrecise,
-} from './types';
-// import { Callback, ItemSelectedCallback } from './types';
-
-// type ScrollToOffsetFunc = () => void;
-// type CalculatedScrollToOffsetFunc = () => void;
-
-// type QueueFuncTypes = ScrollToOffsetFunc | CalculatedScrollToOffsetFunc;
-
-// type OnChangeArgs = {
-//   date: Date;
-//   rawData: IOnViewItemChangeInfo;
-// };
-
-// class AgendaListControllerPublicFieldHolder
+import { Callback, IOnViewItemChangeArgs, LockingAction } from './types';
 
 interface IApiFields {
   onDayChange: Callback<Date>;
   onDaySettled: Callback<Date>;
 }
 
-export class AgendaListController /* implements LockingAction */ {
+export class AgendaListController {
   #itemController: AgendaItemController;
 
   #scrollController: AgendaScrollController;
@@ -57,10 +30,6 @@ export class AgendaListController /* implements LockingAction */ {
 
   #lockers: Set<LockingAction> = new Set();
 
-  // #lockListener: LockCallback = () => {};
-
-  #locked: boolean = true;
-
   #timer: number = 0;
 
   #apiFields: IApiFields = {
@@ -68,7 +37,7 @@ export class AgendaListController /* implements LockingAction */ {
     onDaySettled: () => {},
   };
 
-  constructor(month: Month, caller?: string) {
+  constructor(month: Month) {
     this.forMonth = month.label;
     this.month = month;
     this.#itemController = new AgendaItemController(
@@ -79,37 +48,26 @@ export class AgendaListController /* implements LockingAction */ {
     this.#respondController = new AgendaRespondController(this.#listRef);
     this.#lockers.add(this.#scrollController);
     this.#lockers.add(this.#respondController);
-    // this.#lockers.add(this);
     this.#scrollController.onLockListener(this.lockListener);
     this.#respondController.onLockListener(this.lockListener);
-    // this.onLockListener(this.lockListener);
-    console.log('~ ~ ~ ~ ~ @CONSTRUCTOR', month.label, caller);
   }
 
-  // private notifyLockListener = (): void => {
-  //   this.#lockListener(this.#locked, this);
-  // };
-
   private onReadyCheck = (): void => {
-    console.log('@onReadyCheck');
     if (this.#itemController.isReady && this.#listRef.current) {
       this.#ready = true;
-      // this.notifyLockListener();
-      // this.unlock();
     }
   };
 
   private lockListener = (isLocked: boolean, caller: LockingAction): void => {
-    console.log('@lockListener');
-    this.#locked = isLocked;
-    this.#lockers.forEach((la) => {
-      if (la !== caller && isLocked) la.lock();
-      else if (la !== caller && !isLocked) la.unlock();
+    this.#lockers.forEach((locker) => {
+      if (locker !== caller && isLocked) locker.lock();
+      else if (locker !== caller && !isLocked) locker.unlock();
     });
   };
 
   /**
-   * This is used to repeat action that could not be triggered for some reason immediately
+   * This is used to repeat action that could not be triggered for some reason immediately.
+   * Only one action is accepted ( last one)
    * @param func
    * @param time
    * @param args
@@ -120,12 +78,6 @@ export class AgendaListController /* implements LockingAction */ {
   };
 
   scrollToIndex = (index): void => {
-    console.log(
-      '@scrollToIndex',
-      index,
-      this.#ready,
-      this.#respondController.isLocked
-    );
     if (!this.#ready || this.#respondController.isLocked)
       // we still want to call this, after things are unlocked/ready
       this.tick(this.scrollToIndex, 50, index);
@@ -149,9 +101,6 @@ export class AgendaListController /* implements LockingAction */ {
     this.#itemController.onLayoutForIndex(index);
 
   get listRef(): RefObject<FlatList<any>> {
-    console.log('@listRef/get:: called');
-    // this.#listReady = true;
-    // this.onReadyCheck();
     return this.#listRef;
   }
 
@@ -166,35 +115,16 @@ export class AgendaListController /* implements LockingAction */ {
    * We need to prevent calling onDayChange if we previously called scrollToIndex ( as scrolling programmatically will also trigger onViewableItemsChanged)
    * @param param0 IOnViewItemChangeArgs
    */
-  onViewableItemsChanged = ({
-    viewableItems,
-    changed,
-  }: IOnViewItemChangeArgs): void => {
-    console.log('@onViewableItemsChanged', this.#scrollController.isActive, {
-      viewableItems,
-      changed,
-    });
-
+  onViewableItemsChanged = ({ viewableItems }: IOnViewItemChangeArgs): void => {
     this.#respondController.onViewableItemsChanged();
     this.#scrollController.onViewableItemsChanged();
 
     if (viewableItems.length && this.#scrollController.isActive) {
       const { item } = viewableItems[0];
       const { date } = item;
-      console.log('@onViewableItemsChanged/onDayChange', date);
       this.#apiFields.onDayChange(date);
     }
   };
-
-  // onScroll = (): void => {};
-
-  // onScrollBeginDrag = (): void => {};
-
-  // onMomentumScrollEnd = (): void => {};
-
-  // onScrollEndDrag = (): void => {};
-
-  // onMomentumScrollBegin = (): void => {};
 
   get flatListProps(): any {
     return {
@@ -202,24 +132,19 @@ export class AgendaListController /* implements LockingAction */ {
       key: this.key,
       onViewableItemsChanged: this.onViewableItemsChanged,
 
-      /* onViewableItemsChanged: (info): void => {
-        this.onViewableItemsChanged(info);
-        // this.#respondController.onViewableItemsChanged();
-        // this.#scrollController.onViewableItemsChanged();
-      }, */
       onScroll: (): void => {
         this.#respondController.onScroll();
         this.#scrollController.onScroll();
       },
       // called when fingers starts drag
-      onScrollBeginDrag: (event): void => {
+      onScrollBeginDrag: (): void => {
         this.#respondController.onScrollBeginDrag();
-        this.#scrollController.onScrollBeginDrag(event);
+        this.#scrollController.onScrollBeginDrag();
       },
       // called when finger drag ends ( finger is lifted)
-      onMomentumScrollEnd: (event): void => {
+      onMomentumScrollEnd: (): void => {
         this.#respondController.onMomentumScrollEnd();
-        this.#scrollController.onMomentumScrollEnd(event);
+        this.#scrollController.onMomentumScrollEnd();
       },
       // finger is lifted, but view is still scrolling
       onScrollEndDrag: (): void => {

@@ -2,8 +2,6 @@ import React, { memo, ReactElement } from 'react';
 import DayController, { DayControllerProps } from './DayController';
 import MonthController, { MonthControllerProps } from './MonthController';
 import BaseConfig, { BaseConfigProps } from './BaseConfig';
-// import CalendarDimensions from './CalendarDimensions';
-// import AgendaListWrapper from './AgendaListController';
 import { parseDay, parseMonth } from '../utils';
 
 export type WrapperProps = BaseConfigProps &
@@ -15,7 +13,6 @@ export type WrapperProps = BaseConfigProps &
   };
 
 function Wrapper(props: WrapperProps): ReactElement {
-  console.log('@Wrapper', props);
   const {
     startingDay,
     children,

@@ -3,7 +3,6 @@ import React, {
   ReactElement,
   useState,
   useEffect,
-  // useCallback,
   useContext,
 } from 'react';
 import { MonthControllerCtx, AgendaControllerCtx } from '../contexts';
@@ -20,7 +19,7 @@ function AgendaListWrapper({
   );
 
   useEffect(() => {
-    setController(new AgendaListController(currentMonth, 'useEffect'));
+    setController(new AgendaListController(currentMonth));
   }, [currentMonth]);
 
   return (
