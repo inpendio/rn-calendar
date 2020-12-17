@@ -2,21 +2,11 @@
 import { isAfter, isBefore, parse, set } from 'date-fns';
 import invariant from 'ts-invariant';
 import { DAY_FORMAT, MONTH_FORMAT } from '../consts';
+import { EWEEK_DAYS, TWeekDayIndexes } from './types';
 
-export enum EWEEK_DAYS {
-  SUNDAY = 'sunday',
-  MONDAY = 'monday',
-  TUESDAY = 'tuesday',
-  WEDNESDAY = 'wednesday',
-  THURSDAY = 'thursday',
-  FRIDAY = 'friday',
-  SATURDAY = 'saturday',
-}
 
-export type TWeekDayIndexes = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
-export function asWeekDay(day: string): EWEEK_DAYS {
-  console.log(day);
+function asWeekDay(day: string): EWEEK_DAYS {
   const wdIndex = Object.keys(EWEEK_DAYS).indexOf(day.toUpperCase());
   invariant(wdIndex !== -1, 'asWeekDay:Not a week day');
   const wkv = Object.keys(EWEEK_DAYS)[wdIndex] as EWEEK_DAYS;
@@ -24,7 +14,7 @@ export function asWeekDay(day: string): EWEEK_DAYS {
   return EWEEK_DAYS[wkv];
 }
 
-export function getIndexForUnknown(day: string | number | undefined): number {
+function getIndexForUnknown(day: string | number | undefined): number {
   if ((day || day === 0) && typeof day === 'number' && day < 7 && day >= 0) {
     return day;
   }
@@ -37,7 +27,7 @@ export function getIndexForUnknown(day: string | number | undefined): number {
   return 0;
 }
 
-export function getWeekDaysFromIndex(index: TWeekDayIndexes): Array<string> {
+function getWeekDaysFromIndex(index: TWeekDayIndexes): Array<string> {
   // const index = Object.values(EWEEK_DAYS).indexOf(asWeekDay(startFrom));
   const before: Array<string> = [];
   const after: Array<string> = [];
@@ -48,29 +38,21 @@ export function getWeekDaysFromIndex(index: TWeekDayIndexes): Array<string> {
   return before.concat(after);
 }
 
-export function getWeekDays(
+function getWeekDays(
   startFrom: string | EWEEK_DAYS = EWEEK_DAYS.MONDAY
 ): Array<string> {
   const index = <TWeekDayIndexes>(
     Object.values(EWEEK_DAYS).indexOf(asWeekDay(startFrom))
   );
   return getWeekDaysFromIndex(index);
-  //   const before: Array<string> = [];
-  //   const after: Array<string> = [];
-  //   Object.values(EWEEK_DAYS).forEach((day: EWEEK_DAYS, i) => {
-  //     if (i >= index) before.push(day);
-  //     else after.push(day);
-  //   });
-  //   return before.concat(after);
 }
 
-export function getShortName(day: string): string {
+function getShortName(day: string): string {
   return day[0].toUpperCase() + day.substring(1, 3);
 }
 //
-export function getDayIndex(day: string | EWEEK_DAYS): TWeekDayIndexes {
+function getDayIndex(day: string | EWEEK_DAYS): TWeekDayIndexes {
   const wdIndex = Object.keys(EWEEK_DAYS).indexOf(day.toUpperCase());
-  console.log(wdIndex < 0 || wdIndex > 6, wdIndex);
   invariant(
     wdIndex >= 0 || wdIndex <= 6,
     `getDayIndex:Not a week day${wdIndex}`
@@ -78,7 +60,7 @@ export function getDayIndex(day: string | EWEEK_DAYS): TWeekDayIndexes {
   return wdIndex as TWeekDayIndexes;
 }
 
-export function parseAndInvalidateDate(date, format, refDate): Date {
+function parseAndInvalidateDate(date, format, refDate): Date {
   if (date instanceof Date) return date;
   try {
     return parse(date, format, refDate);
@@ -89,7 +71,7 @@ export function parseAndInvalidateDate(date, format, refDate): Date {
   }
 }
 
-export function parseMonth(date): Date | undefined {
+function parseMonth(date): Date | undefined {
   if (!date) return undefined;
   return parseAndInvalidateDate(
     date,
@@ -98,7 +80,7 @@ export function parseMonth(date): Date | undefined {
   );
 }
 
-export function parseDay(date): Date | undefined {
+function parseDay(date): Date | undefined {
   if (!date) return undefined;
   return parseAndInvalidateDate(
     date,
@@ -107,8 +89,13 @@ export function parseDay(date): Date | undefined {
   );
 }
 
-export function isWithinInterval(date, minDate, maxDate): boolean {
+function isWithinInterval(date, minDate, maxDate): boolean {
   if (minDate && isBefore(date, minDate)) return false;
   if (maxDate && isAfter(date, maxDate)) return false;
   return true;
 }
+
+
+export{
+  asWeekDay,getIndexForUnknown,getWeekDaysFromIndex,getWeekDays,getShortName,getDayIndex,parseAndInvalidateDate,parseMonth,parseDay,isWithinInterval
+};

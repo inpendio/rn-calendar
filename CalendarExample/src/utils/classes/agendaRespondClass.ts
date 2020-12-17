@@ -1,7 +1,7 @@
 import { RefObject } from 'react';
 import { FlatList } from 'react-native';
 
-import { LockingAction, LockCallback } from './types';
+import { LockingAction, LockCallback } from '../types';
 
 export class AgendaRespondController implements LockingAction {
   #locked: boolean = false;
@@ -39,6 +39,7 @@ export class AgendaRespondController implements LockingAction {
   };
 
   scrollToOffset = (offset: number): void => {
+    console.log('scrollToOffset',offset, !!this.#listRef.current,this.isLocked);
     if (this.isLocked) return;
     this.startRun();
     this.#listRef.current?.scrollToOffset({ offset });
@@ -51,10 +52,12 @@ export class AgendaRespondController implements LockingAction {
 
   // #region overrides
   lock = (): void => {
+    console.log('______________________ RESPONDER LOCK _____________________');
     this.#locked = true;
   };
 
   unlock = (): void => {
+    console.log('______________________ RESPONDER UNLOCK _____________________');
     this.#locked = false;
   };
 

@@ -1,19 +1,19 @@
 import { RefObject, createRef } from 'react';
 import { FlatList } from 'react-native';
-import { LIST_CONF } from '../consts';
+import { LIST_CONF } from '../../consts';
 import { AgendaItemController } from './agendaItemControllerClass';
 import { AgendaRespondController } from './agendaRespondClass';
 import { AgendaScrollController } from './agendaScrollClass';
 
 import { Month } from './monthClass';
-import { Callback, IOnViewItemChangeArgs, LockingAction } from './types';
+import { Callback, IOnViewItemChangeArgs, LockCallback, LockingAction } from '../types';
 
 interface IApiFields {
   onDayChange: Callback<Date>;
   onDaySettled: Callback<Date>;
 }
 
-export class AgendaListController {
+export class AgendaListController implements LockingAction {
   #itemController: AgendaItemController;
 
   #scrollController: AgendaScrollController;
@@ -32,12 +32,16 @@ export class AgendaListController {
 
   #timer: number = 0;
 
+  #locked:boolean=false;
+
+  #lockListener:LockCallback=()=>{};
+
   #apiFields: IApiFields = {
     onDayChange: () => {},
     onDaySettled: () => {},
   };
 
-  constructor(month: Month) {
+  constructor(month: Month, caller:string='unknown') {
     this.forMonth = month.label;
     this.month = month;
     this.#itemController = new AgendaItemController(
@@ -50,7 +54,9 @@ export class AgendaListController {
     this.#lockers.add(this.#respondController);
     this.#scrollController.onLockListener(this.lockListener);
     this.#respondController.onLockListener(this.lockListener);
+    console.log('....constructor.........',caller);
   }
+  
 
   private onReadyCheck = (): void => {
     if (this.#itemController.isReady && this.#listRef.current) {
@@ -78,9 +84,10 @@ export class AgendaListController {
   };
 
   scrollToIndex = (index): void => {
+    console.log("scrollToIndex", this.#ready, index);
     if (!this.#ready || this.#respondController.isLocked)
       // we still want to call this, after things are unlocked/ready
-      this.tick(this.scrollToIndex, 50, index);
+      this.tick(this.scrollToIndex, 1500, index);
     else {
       this.#respondController.scrollToOffset(
         this.#itemController.getOffset(index)
@@ -101,12 +108,54 @@ export class AgendaListController {
     this.#itemController.onLayoutForIndex(index);
 
   get listRef(): RefObject<FlatList<any>> {
+    console.log('~~~~ REF ~~~~');
     return this.#listRef;
   }
 
   get key(): string {
     return `AgendaList_${this.forMonth}`;
   }
+
+  lock= ():void=>{
+    this.#locked = true;
+  };
+
+  unlock= ():void=>{
+    this.#locked = false;
+  };
+
+  onLockListener= (callback: LockCallback):void=>{
+    this.#lockListener = callback;
+  };
+
+  onScroll= ():void=>{
+    this.#respondController.onScroll();
+    this.#scrollController.onScroll();
+  };
+
+  onScrollBeginDrag= ():void=>{
+    console.log('@-->onScrollBeginDrag');
+    this.#respondController.onScrollBeginDrag();
+    this.#scrollController.onScrollBeginDrag();
+  };
+
+  onMomentumScrollEnd= ():void=>{
+    console.log('@<--onMomentumScrollEnd');
+    this.#respondController.onMomentumScrollEnd();
+    this.#scrollController.onMomentumScrollEnd();
+  };
+
+  onScrollEndDrag= ():void=>{
+    console.log('@<--onScrollEndDrag');
+    this.#respondController.onScrollEndDrag();
+    this.#scrollController.onScrollEndDrag();
+  };
+
+  onMomentumScrollBegin= ():void=>{
+    console.log('@-->onMomentumScrollBegin');
+    this.#respondController.onMomentumScrollBegin();
+    this.#scrollController.onMomentumScrollBegin();
+  };
 
   /**
    * Will call onViewableItemsChanged of child controllers.
@@ -132,30 +181,15 @@ export class AgendaListController {
       key: this.key,
       onViewableItemsChanged: this.onViewableItemsChanged,
 
-      onScroll: (): void => {
-        this.#respondController.onScroll();
-        this.#scrollController.onScroll();
-      },
+      onScroll: this.onScroll,
       // called when fingers starts drag
-      onScrollBeginDrag: (): void => {
-        this.#respondController.onScrollBeginDrag();
-        this.#scrollController.onScrollBeginDrag();
-      },
+      onScrollBeginDrag: this.onScrollBeginDrag,
       // called when finger drag ends ( finger is lifted)
-      onMomentumScrollEnd: (): void => {
-        this.#respondController.onMomentumScrollEnd();
-        this.#scrollController.onMomentumScrollEnd();
-      },
+      onMomentumScrollEnd: this.onMomentumScrollEnd,
       // finger is lifted, but view is still scrolling
-      onScrollEndDrag: (): void => {
-        this.#respondController.onScrollEndDrag();
-        this.#scrollController.onScrollEndDrag();
-      },
+      onScrollEndDrag: this.onScrollEndDrag,
       // scrolling stopped
-      onMomentumScrollBegin: (): void => {
-        this.#respondController.onMomentumScrollBegin();
-        this.#scrollController.onMomentumScrollBegin();
-      },
+      onMomentumScrollBegin: this.onMomentumScrollBegin,
     };
   }
 

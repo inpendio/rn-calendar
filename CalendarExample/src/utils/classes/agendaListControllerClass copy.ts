@@ -7,10 +7,10 @@ import {
   // ViewabilityConfig,
   // ViewabilityConfigCallbackPair,
 } from 'react-native';
-import { LIST_CONF } from '../consts';
+import { LIST_CONF } from '../../consts';
 
 import { Month } from './monthClass';
-import { Callback, ItemSelectedCallback } from './types';
+import { Callback, ItemSelectedCallback } from '../types';
 
 type ScrollToOffsetFunc = () => void;
 type CalculatedScrollToOffsetFunc = () => void;

@@ -1,7 +1,7 @@
 import { RefObject } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, Platform } from 'react-native';
 import invariant from 'ts-invariant';
-import { LockingAction, LockCallback } from './types';
+import { LockingAction, LockCallback } from '../types';
 
 export class AgendaScrollController implements LockingAction {
   #isDrag: boolean = false;
@@ -11,6 +11,8 @@ export class AgendaScrollController implements LockingAction {
   #lockListener: LockCallback = () => {};
 
   #listRef: RefObject<FlatList<any>>;
+
+  #timer:number = 0;
 
   constructor(list: RefObject<FlatList<any>>) {
     this.#listRef = list;
@@ -41,6 +43,18 @@ export class AgendaScrollController implements LockingAction {
     }
   };
 
+  /**
+   * This is used to repeat action that could not be triggered for some reason immediately.
+   * Only one action is accepted ( last one)
+   * @param func
+   * @param time
+   * @param args
+   */
+  private tick = (func: Function, time: number, ...args: any[]): void => {
+    clearTimeout(this.#timer);
+    this.#timer = setTimeout(func, time, ...args);
+  };
+
   get isActive(): boolean {
     return this.#isDrag;
   }
@@ -52,6 +66,7 @@ export class AgendaScrollController implements LockingAction {
   };
 
   lock = (): void => {
+    console.log('______________________ SCROLL LOCK _____________________');
     this.#locked = true;
     this.#listRef.current?.setNativeProps({
       scrollEnabled: false,
@@ -59,6 +74,7 @@ export class AgendaScrollController implements LockingAction {
   };
 
   unlock = (): void => {
+    console.log('______________________ SCROLL UNLOCK _____________________');
     this.#locked = false;
     this.#listRef.current?.setNativeProps({
       scrollEnabled: true,
@@ -79,7 +95,15 @@ export class AgendaScrollController implements LockingAction {
     this.onDragEnd();
   };
 
-  onScrollEndDrag = (): void => {};
+  onScrollEndDrag = (): void => {
+    if(Platform.OS === 'ios'){
+      this.tick(this.onDragEnd, 50);
+    }
+  };
 
-  onMomentumScrollBegin = (): void => {};
+  onMomentumScrollBegin = (): void => {
+    if(Platform.OS==='ios' && this.#timer){
+      clearTimeout(this.#timer);
+    }
+  };
 }

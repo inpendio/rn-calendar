@@ -9,17 +9,17 @@ import AgendaItem from './Agenda/Item';
 import DimensionWrapper from '../containers/CalendarDimensions';
 import AgendaController from '../containers/AgendaListController';
 
-function CalendarWithDimension(): ReactElement {
+function CalendarWithDimension(props: any): ReactElement {
   return (
-    <DimensionWrapper key="prepack_calendar_dimension_provider">
-      <NakedCalendar />
+    <DimensionWrapper key="prepack_calendar_dimension_provider" {...props}>
+      <NakedCalendar key="wrapped_calendar" />
     </DimensionWrapper>
   );
 }
-function AgendaWithController(): ReactElement {
+function AgendaWithController(props: any): ReactElement {
   return (
-    <AgendaController key="prepack_agenda_controller_provider">
-      <NakedAgenda />
+    <AgendaController key="prepack_agenda_controller_provider" {...props}>
+      <NakedAgenda key="wrapped_agenda" />
     </AgendaController>
   );
 }

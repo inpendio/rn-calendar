@@ -1,5 +1,5 @@
 import { LayoutRectangle, LayoutChangeEvent } from 'react-native';
-import { Callback } from './types';
+import { Callback } from '../types';
 
 export class AgendaItemController {
   #rowsReady: boolean = false;
@@ -26,7 +26,7 @@ export class AgendaItemController {
   };
 
   getOffset = (index: number): number => {
-    console.log('@getOffset', this.#rowsReady, index, this);
+    console.log('@getOffset', {ready:this.#rowsReady, index, itemController:this});
     let offset = 0;
     for (let i = 0; i <= index - 1; i++) {
       offset += this.#rowLayouts.get(i)?.height ?? 0;

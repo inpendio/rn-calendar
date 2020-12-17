@@ -18,6 +18,7 @@ function DayView({ day }: DayProps): ReactElement {
   );
   const [isSelectable] = useState(isWithinInterval(day.date, minDate, maxDate));
   const isSelected = isSameDay(day.date, selectedDate);
+
   return (
     <Pressable
       style={[

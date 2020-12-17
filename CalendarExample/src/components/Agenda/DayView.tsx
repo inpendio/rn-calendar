@@ -1,33 +1,43 @@
-import { differenceInMinutes } from 'date-fns';
-import React, { memo, ReactElement, ReactNode } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import invariant from 'ts-invariant';
+// import { differenceInMinutes } from 'date-fns';
+import React, { memo, ReactElement, ReactNode, useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+// import invariant from 'ts-invariant';
+import { AgendaControllerCtx, AgendaControlOnItemEventPressed } from '../../contexts';
 import { renderCustom } from '../../utils/renderHelpers';
 import { Day } from '../../utils';
-import { CalendarEvent, RenderProp } from '../../utils/types';
+import { ParsedCalendarEvent, RenderProp } from '../../utils/types';
 
 export type DayViewProps = {
   day: Day;
-  events?: CalendarEvent[];
-  renderer?: RenderProp;
-  eventRenderer?: RenderProp;
+  events?: ParsedCalendarEvent[];
+  // renderer?: RenderProp;
+  // eventRenderer?: RenderProp;
 };
 
-const renderEvent = (
-  event: CalendarEvent,
-  renderer?: RenderProp
-): ReactNode => {
-  const { allDay, startTime, endTime, title } = event;
+export type AgendaItemEventRendererProps = ParsedCalendarEvent & {
+  duration: number;
+};
 
-  let duration = 0; // in minutes
-  if (allDay) duration = 24 * 60;
-  else {
-    invariant(endTime, "If event is not 'allDay', endTime should be provided");
-    differenceInMinutes(startTime, endTime);
-  }
-  if (renderer) return renderCustom(renderer, { ...event, duration });
+export type AgendaItemRenderProps = Day & {
+  events?: ParsedCalendarEvent[];
+  eventRenderer?: RenderProp;
+  onPress?: AgendaControlOnItemEventPressed;
+};
+
+type AgendaItemEventRenderProps = {
+  event: ParsedCalendarEvent,
+  renderer?: RenderProp,
+  onPress?: AgendaControlOnItemEventPressed;
+};
+
+const renderEvent = ({ event, renderer, onPress }: AgendaItemEventRenderProps): ReactNode => {
+  const { /* allDay, startTime, endTime, */ title, duration, key } = event;
+
+
+  if (renderer) return renderCustom(renderer, { ...event, duration, } as AgendaItemEventRendererProps);
   return (
-    <Pressable
+    <TouchableOpacity
+      key={key}
       style={{
         height: 3 * duration,
         paddingHorizontal: 5,
@@ -35,22 +45,29 @@ const renderEvent = (
         marginHorizontal: 1,
         borderRadius: 8,
       }}
+      disabled={!onPress}
+      onPress={(): void => {
+        if (onPress)
+          onPress(event);
+      }}
     >
       <Text style={{ color: 'white', fontWeight: 'bold' }}>{title}</Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
+
+
 
 function DayView({
   day,
   events = [],
-  renderer = undefined,
-  eventRenderer = undefined,
 }: DayViewProps): ReactElement | null {
-  if (renderer)
-    return renderCustom(renderer, { ...day, events, eventRenderer });
+  const { props: { itemRenderer, eventRenderer, onItemPressed, onItemEventPressed } } = useContext(AgendaControllerCtx);
+  if (itemRenderer)
+    return renderCustom(itemRenderer, { ...day, events, eventRenderer } as AgendaItemRenderProps);
+
   return (
-    <View
+    <TouchableOpacity
       style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -58,6 +75,11 @@ function DayView({
         paddingHorizontal: 10,
         borderBottomColor: '#666',
         borderBottomWidth: StyleSheet.hairlineWidth,
+      }}
+      disabled={!onItemPressed}
+      onPress={(): void => {
+        if (onItemPressed)
+          onItemPressed({ ...day, events });
       }}
     >
       <View>
@@ -69,9 +91,9 @@ function DayView({
           justifyContent: 'space-around',
         }}
       >
-        {events && events.map((event) => renderEvent(event, eventRenderer))}
+        {events && events.map((event) => renderEvent({ event, renderer: eventRenderer, onPress: onItemEventPressed }))}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

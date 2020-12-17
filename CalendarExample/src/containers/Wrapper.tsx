@@ -2,12 +2,14 @@ import React, { memo, ReactElement } from 'react';
 import DayController, { DayControllerProps } from './DayController';
 import MonthController, { MonthControllerProps } from './MonthController';
 import BaseConfig, { BaseConfigProps } from './BaseConfig';
-import { parseDay, parseMonth } from '../utils';
+import { parseDay } from '../utils';
+import { EventsControllerProps, EventsController } from './EventsController';
+
 
 export type WrapperProps = BaseConfigProps &
   IBaseProps &
   DayControllerProps &
-  MonthControllerProps & {
+  MonthControllerProps & EventsControllerProps & {
     minDate?: Date | undefined | string;
     maxDate?: Date | undefined | string;
   };
@@ -18,17 +20,14 @@ function Wrapper(props: WrapperProps): ReactElement {
     children,
     minDate,
     maxDate,
-    minMonth,
-    maxMonth,
     pastScrollRange,
     futureScrollRange,
+    events = [],
   } = props;
   return (
     <BaseConfig startingDay={startingDay} key="BaseConfig-providerComponents">
       <MonthController
         key="MonthController-providerComponents"
-        maxMonth={parseMonth(maxMonth)}
-        minMonth={parseMonth(minMonth)}
         pastScrollRange={pastScrollRange}
         futureScrollRange={futureScrollRange}
       >
@@ -37,7 +36,9 @@ function Wrapper(props: WrapperProps): ReactElement {
           minDate={parseDay(minDate)}
           maxDate={parseDay(maxDate)}
         >
-          {children}
+          <EventsController events={events}>
+            {children}
+          </EventsController>
         </DayController>
       </MonthController>
     </BaseConfig>
@@ -46,7 +47,7 @@ function Wrapper(props: WrapperProps): ReactElement {
 
 export default memo(Wrapper);
 
-/* 
+/*
 <CalendarDimensions key="CalendarDimensions-providerComponents">
             <AgendaListWrapper key="AgendaListWrapper-providerComponents">
               {children}

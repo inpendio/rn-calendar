@@ -13,6 +13,8 @@ function DayController({
 }: DayControllerProps & IBaseProps): ReactElement {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  console.log(selectedDate);
+
   return (
     <DayControllerCtx.Provider
       value={{ selectedDate, setSelectedDate, minDate, maxDate }}

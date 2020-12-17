@@ -1,6 +1,7 @@
 export * from './hooks';
 export * from './dateHelpers';
-export * from './dayClass';
-export * from './monthClass';
-export * from './weekClass';
-export * from './agendaListControllerClass';
+// export * from './classes/dayClass';
+// export * from './classes/monthClass';
+// export * from './classes/weekClass';
+// export * from './classes/agendaListControllerClass';
+export * from './classes';

@@ -1,60 +1,14 @@
 import React, { memo, ReactElement, useState, useContext } from 'react';
-import { subMonths, addMonths, format, isSameMonth } from 'date-fns';
+import { subMonths, addMonths/* , format, isSameMonth  */ } from 'date-fns';
 import { MonthControllerCtx, BaseConfigCtx } from '../contexts';
 import { Month } from '../utils';
-import { MONTH_ORDER, MONTH_FORMAT } from '../consts';
+import { MONTH_ORDER/* , MONTH_FORMAT */ } from '../consts';
+import { calculateMinMonth, calculateMaxMonth, getCalculatedMonth, calculatePagerPosition, getKeys } from './helpers';
 
-type PassingArgs = {
-  startingDayIndex: number;
-  order: MONTH_ORDER;
-};
-
-function getCalculatedMonth(
-  current,
-  comparator,
-  calcFunc,
-  rest: PassingArgs
-): Month | null {
-  if (
-    comparator &&
-    (isSameMonth(calcFunc(current, 1), comparator) ||
-      isSameMonth(current, comparator))
-  )
-    return null;
-  return new Month({
-    date: calcFunc(current, 1),
-    startingDay: rest.startingDayIndex,
-    order: rest.order,
-  });
-}
-
-function calculateMinMonth(
-  current,
-  { pastScrollRange, minMonth }
-): Date | undefined {
-  let out;
-  if (minMonth) out = minMonth;
-  if (pastScrollRange || pastScrollRange === 0)
-    out = subMonths(current, pastScrollRange);
-
-  return out;
-}
-
-function calculateMaxMonth(
-  current,
-  { futureScrollRange, maxMonth }
-): Date | undefined {
-  let out;
-  if (maxMonth) out = maxMonth;
-  if (futureScrollRange || futureScrollRange === 0)
-    out = addMonths(current, futureScrollRange);
-
-  return out;
-}
 
 export type MonthControllerProps = {
-  minMonth?: Date | undefined;
-  maxMonth?: Date | undefined;
+  // minMonth?: Date | undefined;
+  // maxMonth?: Date | undefined;
   pastScrollRange: number;
   futureScrollRange: number;
   initialDate?: Date;
@@ -62,8 +16,6 @@ export type MonthControllerProps = {
 
 function MonthController({
   children,
-  minMonth,
-  maxMonth,
   futureScrollRange,
   pastScrollRange,
   initialDate = new Date(),
@@ -78,11 +30,13 @@ function MonthController({
   );
 
   const [finalMinMonth] = useState(
-    calculateMinMonth(currentMonth.date, { pastScrollRange, minMonth })
+    calculateMinMonth(currentMonth.date, pastScrollRange)
   );
   const [finalMaxMonth] = useState(
-    calculateMaxMonth(currentMonth.date, { futureScrollRange, maxMonth })
+    calculateMaxMonth(currentMonth.date, futureScrollRange)
   );
+
+
 
   const [previousMonth, setPreviousMonth] = useState<Month | null>(
     getCalculatedMonth(currentMonth.date, finalMinMonth, subMonths, {
@@ -97,7 +51,17 @@ function MonthController({
     })
   );
 
+  const [pagerPosition, setPagerPosition] = useState<number>(calculatePagerPosition(previousMonth));
+
+  const setNewValues = (past, present, future): void => {
+    setPreviousMonth(past);
+    setCurrentMonth(present);
+    setNextMonth(future);
+    setPagerPosition(calculatePagerPosition(past));
+  };
+
   const monthForward = (): void => {
+    console.log('%c @MonthController/monthForward', 'color:#f00');
     if (!nextMonth) return;
     const newFuture = getCalculatedMonth(
       nextMonth.date,
@@ -110,12 +74,10 @@ function MonthController({
     newCurrent.order = MONTH_ORDER.PRESENT;
     const newPast = currentMonth;
     newPast.order = MONTH_ORDER.PAST;
-
-    setPreviousMonth(newPast);
-    setCurrentMonth(newCurrent);
-    setNextMonth(newFuture);
+    setNewValues(newPast, newCurrent, newFuture);
   };
   const monthBack = (): void => {
+    console.log('%c @MonthController/monthBack', 'color:#f00');
     if (!previousMonth) return;
     const newPast = getCalculatedMonth(
       previousMonth.date,
@@ -123,15 +85,13 @@ function MonthController({
       subMonths,
       { order: MONTH_ORDER.PAST, startingDayIndex }
     );
+    console.log({ newPast });
     if (newPast === null) return;
     const newCurrent = previousMonth;
     newCurrent.order = MONTH_ORDER.PRESENT;
     const newFuture = currentMonth;
     newFuture.order = MONTH_ORDER.FUTURE;
-
-    setPreviousMonth(newPast);
-    setCurrentMonth(newCurrent);
-    setNextMonth(newFuture);
+    setNewValues(newPast, newCurrent, newFuture);
   };
 
   const getByOrder = (order: MONTH_ORDER): Month | null => {
@@ -147,16 +107,21 @@ function MonthController({
     }
   };
 
-  const keys = {
-    past: `__${
-      previousMonth ? format(previousMonth.date, MONTH_FORMAT) : 'no_past___'
-    }__`,
-    present: `__${format(currentMonth.date, MONTH_FORMAT)}__`,
-    future: `__${
-      nextMonth ? format(nextMonth.date, MONTH_FORMAT) : 'no_future__'
-    }__`,
-  };
 
+
+  console.groupCollapsed("MonthController");
+  console.log({
+    currentMonth,
+    previousMonth,
+    nextMonth,
+    monthForward,
+    monthBack,
+    getByOrder,
+    keys: getKeys({ currentMonth, nextMonth, previousMonth }),
+    futureScrollRange,
+    pastScrollRange, finalMaxMonth, finalMinMonth
+  });
+  console.groupEnd();
   return (
     <MonthControllerCtx.Provider
       value={{
@@ -169,7 +134,8 @@ function MonthController({
         monthForward,
         monthBack,
         getByOrder,
-        keys,
+        keys: getKeys({ currentMonth, nextMonth, previousMonth }),
+        pagerPosition
       }}
     >
       {children}

@@ -9,19 +9,25 @@ export type TopKeysObject = {
   past: string;
   present: string;
   future: string;
+  viewPager:string
 };
 
-export interface IMonthControllerCtx {
-  currentMonth: Month;
+export type MonthMap = {
+  currentMonth: Month;previousMonth: Month | null;nextMonth: Month | null;
+};
+
+export interface IMonthControllerCtx extends MonthMap{
+  
   setCurrentMonth: SetMonthFunction<Month>;
-  previousMonth: Month | null;
+  
   setPreviousMonth: SetMonthFunction<Month | null>;
-  nextMonth: Month | null;
+  
   setNextMonth: SetMonthFunction<Month | null>;
   monthForward: () => void;
   monthBack: () => void;
   getByOrder: (order: MONTH_ORDER) => Month | null;
   keys: TopKeysObject;
+  pagerPosition:number;
 }
 export const MonthControllerCtx = createContext<IMonthControllerCtx>({
   currentMonth: new Month({
@@ -50,5 +56,7 @@ export const MonthControllerCtx = createContext<IMonthControllerCtx>({
     past: '',
     present: '',
     future: '',
+    viewPager:'defaultPagerKey'
   },
+  pagerPosition:1
 });

@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { getDate } from 'date-fns/fp';
 import { DateComponent, IDateComponent } from './classHelpers';
-import { DAY_FORMAT } from '../consts';
+import { DAY_FORMAT } from '../../consts';
 
 export interface IDayClass extends IDateComponent {}
 

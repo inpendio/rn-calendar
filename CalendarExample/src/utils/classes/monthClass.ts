@@ -5,9 +5,9 @@ import {
   isSameMonth,
   startOfMonth,
 } from 'date-fns';
-import { MONTH_ORDER, MONTH_FORMAT } from '../consts';
+import { MONTH_ORDER, MONTH_FORMAT } from '../../consts';
 import { DateComponent, IDateComponent } from './classHelpers';
-import { getIndexForUnknown, TWeekDayIndexes } from './dateHelpers';
+import { getIndexForUnknown, TWeekDayIndexes } from '../dateHelpers';
 import { Day } from './dayClass';
 import { Week } from './weekClass';
 

@@ -1,6 +1,18 @@
 import { ComponentType, ReactElement } from 'react';
 import { ViewToken } from 'react-native';
-import { Day } from './dayClass';
+import { Day } from './classes/dayClass';
+
+export enum EWEEK_DAYS {
+  SUNDAY = 'sunday',
+  MONDAY = 'monday',
+  TUESDAY = 'tuesday',
+  WEDNESDAY = 'wednesday',
+  THURSDAY = 'thursday',
+  FRIDAY = 'friday',
+  SATURDAY = 'saturday',
+}
+
+export type TWeekDayIndexes = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export type Callback<T> = (data: T) => void;
 export type LockCallback = (T: boolean, caller: LockingAction) => void;
@@ -48,4 +60,11 @@ export type CalendarEvent = {
   endTime?: Date;
   allDay?: boolean;
   data: any;
+  duration?:number;
+};
+
+export type ParsedCalendarEvent = CalendarEvent & {
+  multiday?:boolean;
+  duration:number;
+  key:string;
 };
