@@ -8,7 +8,7 @@ import React, {
 import { LayoutChangeEvent } from 'react-native';
 import { MONTH_ORDER } from '../consts';
 import { CalendarDimensionsCtx } from '../contexts';
-import { Month } from '../utils';
+import { Month } from '../utils/classes';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 enum SET_STATE {

@@ -2,6 +2,7 @@ import { ComponentType, ReactElement } from 'react';
 import { ViewToken } from 'react-native';
 import { Day } from './classes/dayClass';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export enum EWEEK_DAYS {
   SUNDAY = 'sunday',
   MONDAY = 'monday',
@@ -60,11 +61,11 @@ export type CalendarEvent = {
   endTime?: Date;
   allDay?: boolean;
   data: any;
-  duration?:number;
+  duration?: number;
 };
 
 export type ParsedCalendarEvent = CalendarEvent & {
-  multiday?:boolean;
-  duration:number;
-  key:string;
+  multiday?: boolean;
+  duration: number;
+  key: string;
 };

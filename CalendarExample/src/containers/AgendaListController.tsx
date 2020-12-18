@@ -6,21 +6,22 @@ import React, {
   useContext,
 } from 'react';
 import { isSameMonth } from 'date-fns';
-// import { StyleProp, ViewStyle, ListRenderItem, FlatListProps } from 'react-native';
-import { MonthControllerCtx, AgendaControllerCtx, /* AgendaControllerExistingProps,  */AgendaControllerPassedProps, AgendaControllerOmittedFlatListProps } from '../contexts';
-import { AgendaListController/* , Day  */ } from '../utils';
-// import { Callback } from '../utils/types';
+import {
+  MonthControllerCtx,
+  AgendaControllerCtx,
+  AgendaControllerPassedProps,
+  AgendaControllerOmittedFlatListProps,
+} from '../contexts';
+import { AgendaListController } from '../utils';
 
-
-
-
-export type AgendaControllerProps = AgendaControllerOmittedFlatListProps & /* AgendaControllerExistingProps<Day> & */ AgendaControllerPassedProps;
+export type AgendaControllerProps = AgendaControllerOmittedFlatListProps &
+  AgendaControllerPassedProps;
 
 function AgendaListWrapper({
   children,
   itemRenderer,
   eventRenderer,
-  onDateSelected,
+  // onDateSelected,
   onDateChange,
   onItemPressed,
   onItemEventPressed,
@@ -30,23 +31,10 @@ function AgendaListWrapper({
   const [controller, setController] = useState<AgendaListController | null>(
     null
   );
-  // const [props] = useState({
-  //   itemRenderer,
-  //   eventRenderer,
-  //   onDateSelected,
-  //   onDateChange,
-  //   onItemPressed,
-  //   onItemEventPressed,
-  //   otherProps: flatListProps
-  // });
 
   useEffect(() => {
-    console.groupCollapsed("@AgendaListWrapper--> calling new controller");
-    console.log(!controller, controller && !isSameMonth(controller.month.date, currentMonth.date), controller?.month !== currentMonth,);
-    console.log({ controller, currentMonth, controllerDate: controller?.month.date, currentMonthDate: currentMonth.date });
-    console.groupEnd();
     if (!controller || !isSameMonth(controller?.month.date, currentMonth.date))
-      setController(new AgendaListController(currentMonth, 'AgendaListWrapper'));
+      setController(new AgendaListController(currentMonth));
   }, [currentMonth]);
 
   return (
@@ -56,12 +44,12 @@ function AgendaListWrapper({
         props: {
           itemRenderer,
           eventRenderer,
-          onDateSelected,
+          // onDateSelected,
           onDateChange,
           onItemPressed,
           onItemEventPressed,
-          otherProps: flatListProps
-        }
+          otherProps: flatListProps,
+        },
       }}
     >
       {children}

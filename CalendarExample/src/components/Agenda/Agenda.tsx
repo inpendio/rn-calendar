@@ -1,4 +1,4 @@
-import React, { memo, ReactElement, useEffect, useContext, Profiler } from 'react';
+import React, { memo, ReactElement, useEffect, useContext } from 'react';
 import {
   FlatList,
   // FlatListProps,
@@ -30,12 +30,20 @@ import Item from './Item';
 // export type AgendaProps = OwnProps & OmitedFlatListProps;
 
 function Agenda(): ReactElement | null {
-  const { listController, props: {
-    // itemRenderer,
-    onDateSelected, otherProps, onDateChange } } = useContext(AgendaControllerCtx);
+  const {
+    listController,
+    props: {
+      // itemRenderer,
+      onDateSelected,
+      otherProps,
+      onDateChange,
+    },
+  } = useContext(AgendaControllerCtx);
   const { selectedDate, setSelectedDate } = useContext(DayControllerCtx);
 
-  useEffect(() => { console.log('%c AGENDA FIRST', 'background: #222; color: #ba8965'); }, []);
+  // useEffect(() => {
+  //   console.log('%c AGENDA FIRST', 'background: #222; color: #ba8965');
+  // }, []);
   // useEffect(() => { console.log('%c @Agenda/useEffect[style,itemRenderer,onDateSelected, other]', 'background: #222; color: #3399dd'); }, [
   //   itemRenderer,
   //   onDateSelected, otherProps]);
@@ -71,20 +79,16 @@ function Agenda(): ReactElement | null {
   // console.log('%c RENDER @@@@@@@', 'background: #222; color: #bada55', { listController });
 
   return (
-    <Profiler id="FlatList" onRender={(info): void => { console.log(info); }}>
-      <FlatList
-        style={{ flex: 1, backgroundColor: 'white' }}
-        {...otherProps}
-        ref={listController.listRef}
-
-        data={listController.month.days}
-        keyExtractor={(day): string => `agendaDay_${day.key}`}
-        renderItem={(itemProps): ReactElement => (
-          <Item {...itemProps} />
-        )}
-        initialNumToRender={listController.month.days.length}
-        {...listController.flatListProps}
-      /></Profiler>
+    <FlatList
+      style={{ flex: 1, backgroundColor: 'white' }}
+      {...otherProps}
+      ref={listController.listRef}
+      data={listController.month.days}
+      keyExtractor={(day): string => `agendaDay_${day.key}`}
+      renderItem={(itemProps): ReactElement => <Item {...itemProps} />}
+      initialNumToRender={listController.month.days.length}
+      {...listController.flatListProps}
+    />
   );
 }
 

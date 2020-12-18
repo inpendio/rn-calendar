@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { FlatListProps, ListRenderItem, } from 'react-native';
+import { FlatListProps, ListRenderItem } from 'react-native';
 import { AgendaListController, Day } from '../utils';
 import { ParsedCalendarEvent, Callback, RenderProp } from '../utils/types';
 
@@ -7,11 +7,11 @@ export type AgendaControlOnItemEventPressed = Callback<ParsedCalendarEvent>;
 
 export type AgendaControllerPassedProps = {
   itemRenderer?: RenderProp;
-  eventRenderer?:RenderProp;
-  onDateSelected?: Callback<Date>;
+  eventRenderer?: RenderProp;
+  // onDateSelected?: Callback<Date>;
   onDateChange?: Callback<Date>;
-  onItemPressed?:Callback<Day & {events:ParsedCalendarEvent[]}>;
-  onItemEventPressed?:AgendaControlOnItemEventPressed;
+  onItemPressed?: Callback<Day & { events: ParsedCalendarEvent[] }>;
+  onItemEventPressed?: AgendaControlOnItemEventPressed;
 };
 
 export type AgendaControllerExistingProps<ItemT> = {
@@ -19,20 +19,19 @@ export type AgendaControllerExistingProps<ItemT> = {
   keyExtractor?: (item: ItemT, index: number) => string;
   renderItem: ListRenderItem<ItemT> | null | undefined;
 };
-export type AgendaControllerOmittedFlatListProps<ItemT = any> = 
-Omit<
+export type AgendaControllerOmittedFlatListProps<ItemT = any> = Omit<
   Omit<FlatListProps<ItemT>, keyof AgendaControllerExistingProps<ItemT>>,
   keyof AgendaControllerPassedProps
 >;
 
 export type AgendaControllerOtherProps = AgendaControllerPassedProps & {
-  otherProps?:AgendaControllerOmittedFlatListProps
+  otherProps?: AgendaControllerOmittedFlatListProps;
 };
 export interface IAgendaControllerCtx {
   listController: AgendaListController | null;
-  props:AgendaControllerOtherProps
+  props: AgendaControllerOtherProps;
 }
 export const AgendaControllerCtx = createContext<IAgendaControllerCtx>({
   listController: null,
-  props:{}
+  props: {},
 });

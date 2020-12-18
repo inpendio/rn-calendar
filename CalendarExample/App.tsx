@@ -1,8 +1,5 @@
 import React, { ReactElement } from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-} from 'react-native';
+import { SafeAreaView, StatusBar } from 'react-native';
 
 import Wrapper from './src/containers/Wrapper';
 import { Calendar, Agenda } from './src/components';
@@ -19,7 +16,7 @@ const App = (): ReactElement => {
         minDate="03-12-2020"
         // maxMonth="04-2021"
         futureScrollRange={4}
-        pastScrollRange={0}
+        pastScrollRange={2}
         events={mocks}
       >
         <Calendar />
@@ -28,7 +25,5 @@ const App = (): ReactElement => {
     </SafeAreaView>
   );
 };
-
-
 
 export default App;

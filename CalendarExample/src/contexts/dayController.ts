@@ -1,4 +1,9 @@
 import { createContext } from 'react';
+import { Callback } from '../utils/types';
+
+export type DayControllerPassedProps = {
+  onDateSelected?: Callback<Date>;
+};
 
 export interface IDayControllerCtx {
   selectedDate: Date;

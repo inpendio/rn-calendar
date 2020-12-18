@@ -2,7 +2,10 @@
 import React, { memo, ReactElement, ReactNode, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 // import invariant from 'ts-invariant';
-import { AgendaControllerCtx, AgendaControlOnItemEventPressed } from '../../contexts';
+import {
+  AgendaControllerCtx,
+  AgendaControlOnItemEventPressed,
+} from '../../contexts';
 import { renderCustom } from '../../utils/renderHelpers';
 import { Day } from '../../utils';
 import { ParsedCalendarEvent, RenderProp } from '../../utils/types';
@@ -25,46 +28,56 @@ export type AgendaItemRenderProps = Day & {
 };
 
 type AgendaItemEventRenderProps = {
-  event: ParsedCalendarEvent,
-  renderer?: RenderProp,
+  event: ParsedCalendarEvent;
+  renderer?: RenderProp;
   onPress?: AgendaControlOnItemEventPressed;
 };
 
-const renderEvent = ({ event, renderer, onPress }: AgendaItemEventRenderProps): ReactNode => {
-  const { /* allDay, startTime, endTime, */ title, duration, key } = event;
+const renderEvent = ({
+  event,
+  renderer,
+  onPress,
+}: AgendaItemEventRenderProps): ReactNode => {
+  const { title, duration, key, multiday } = event;
 
+  if (renderer)
+    return renderCustom(renderer, {
+      ...event,
+      duration,
+    } as AgendaItemEventRendererProps);
 
-  if (renderer) return renderCustom(renderer, { ...event, duration, } as AgendaItemEventRendererProps);
   return (
     <TouchableOpacity
       key={key}
       style={{
-        height: 3 * duration,
-        paddingHorizontal: 5,
-        backgroundColor: 'blue',
+        height: (1 * duration) / (duration > 300 ? 15 : 2) + 30,
+        padding: 5,
+        backgroundColor: multiday ? 'orange' : 'blue',
         marginHorizontal: 1,
         borderRadius: 8,
       }}
       disabled={!onPress}
       onPress={(): void => {
-        if (onPress)
-          onPress(event);
+        if (onPress) onPress(event);
       }}
     >
-      <Text style={{ color: 'white', fontWeight: 'bold' }}>{title}</Text>
+      <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 11 }}>
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 };
 
-
-
-function DayView({
-  day,
-  events = [],
-}: DayViewProps): ReactElement | null {
-  const { props: { itemRenderer, eventRenderer, onItemPressed, onItemEventPressed } } = useContext(AgendaControllerCtx);
+function DayView({ day, events = [] }: DayViewProps): ReactElement | null {
+  const {
+    props: { itemRenderer, eventRenderer, onItemPressed, onItemEventPressed },
+  } = useContext(AgendaControllerCtx);
   if (itemRenderer)
-    return renderCustom(itemRenderer, { ...day, events, eventRenderer } as AgendaItemRenderProps);
+    return renderCustom(itemRenderer, {
+      ...day,
+      events,
+      eventRenderer,
+    } as AgendaItemRenderProps);
 
   return (
     <TouchableOpacity
@@ -78,8 +91,7 @@ function DayView({
       }}
       disabled={!onItemPressed}
       onPress={(): void => {
-        if (onItemPressed)
-          onItemPressed({ ...day, events });
+        if (onItemPressed) onItemPressed({ ...day, events });
       }}
     >
       <View>
@@ -91,7 +103,14 @@ function DayView({
           justifyContent: 'space-around',
         }}
       >
-        {events && events.map((event) => renderEvent({ event, renderer: eventRenderer, onPress: onItemEventPressed }))}
+        {events &&
+          events.map((event) =>
+            renderEvent({
+              event,
+              renderer: eventRenderer,
+              onPress: onItemEventPressed,
+            })
+          )}
       </View>
     </TouchableOpacity>
   );

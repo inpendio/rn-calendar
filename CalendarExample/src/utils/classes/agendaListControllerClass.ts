@@ -6,7 +6,12 @@ import { AgendaRespondController } from './agendaRespondClass';
 import { AgendaScrollController } from './agendaScrollClass';
 
 import { Month } from './monthClass';
-import { Callback, IOnViewItemChangeArgs, LockCallback, LockingAction } from '../types';
+import {
+  Callback,
+  IOnViewItemChangeArgs,
+  LockCallback,
+  LockingAction,
+} from '../types';
 
 interface IApiFields {
   onDayChange: Callback<Date>;
@@ -32,16 +37,16 @@ export class AgendaListController implements LockingAction {
 
   #timer: number = 0;
 
-  #locked:boolean=false;
+  #locked: boolean = false;
 
-  #lockListener:LockCallback=()=>{};
+  #lockListener: LockCallback = () => {};
 
   #apiFields: IApiFields = {
     onDayChange: () => {},
     onDaySettled: () => {},
   };
 
-  constructor(month: Month, caller:string='unknown') {
+  constructor(month: Month) {
     this.forMonth = month.label;
     this.month = month;
     this.#itemController = new AgendaItemController(
@@ -54,9 +59,8 @@ export class AgendaListController implements LockingAction {
     this.#lockers.add(this.#respondController);
     this.#scrollController.onLockListener(this.lockListener);
     this.#respondController.onLockListener(this.lockListener);
-    console.log('....constructor.........',caller);
+    // console.log('....constructor.........',caller);
   }
-  
 
   private onReadyCheck = (): void => {
     if (this.#itemController.isReady && this.#listRef.current) {
@@ -84,7 +88,7 @@ export class AgendaListController implements LockingAction {
   };
 
   scrollToIndex = (index): void => {
-    console.log("scrollToIndex", this.#ready, index);
+    // console.log("scrollToIndex", this.#ready, index);
     if (!this.#ready || this.#respondController.isLocked)
       // we still want to call this, after things are unlocked/ready
       this.tick(this.scrollToIndex, 1500, index);
@@ -108,7 +112,7 @@ export class AgendaListController implements LockingAction {
     this.#itemController.onLayoutForIndex(index);
 
   get listRef(): RefObject<FlatList<any>> {
-    console.log('~~~~ REF ~~~~');
+    // console.log('~~~~ REF ~~~~');
     return this.#listRef;
   }
 
@@ -116,43 +120,43 @@ export class AgendaListController implements LockingAction {
     return `AgendaList_${this.forMonth}`;
   }
 
-  lock= ():void=>{
+  lock = (): void => {
     this.#locked = true;
   };
 
-  unlock= ():void=>{
+  unlock = (): void => {
     this.#locked = false;
   };
 
-  onLockListener= (callback: LockCallback):void=>{
+  onLockListener = (callback: LockCallback): void => {
     this.#lockListener = callback;
   };
 
-  onScroll= ():void=>{
+  onScroll = (): void => {
     this.#respondController.onScroll();
     this.#scrollController.onScroll();
   };
 
-  onScrollBeginDrag= ():void=>{
-    console.log('@-->onScrollBeginDrag');
+  onScrollBeginDrag = (): void => {
+    // console.log('@-->onScrollBeginDrag');
     this.#respondController.onScrollBeginDrag();
     this.#scrollController.onScrollBeginDrag();
   };
 
-  onMomentumScrollEnd= ():void=>{
-    console.log('@<--onMomentumScrollEnd');
+  onMomentumScrollEnd = (): void => {
+    // console.log('@<--onMomentumScrollEnd');
     this.#respondController.onMomentumScrollEnd();
     this.#scrollController.onMomentumScrollEnd();
   };
 
-  onScrollEndDrag= ():void=>{
-    console.log('@<--onScrollEndDrag');
+  onScrollEndDrag = (): void => {
+    // console.log('@<--onScrollEndDrag');
     this.#respondController.onScrollEndDrag();
     this.#scrollController.onScrollEndDrag();
   };
 
-  onMomentumScrollBegin= ():void=>{
-    console.log('@-->onMomentumScrollBegin');
+  onMomentumScrollBegin = (): void => {
+    // console.log('@-->onMomentumScrollBegin');
     this.#respondController.onMomentumScrollBegin();
     this.#scrollController.onMomentumScrollBegin();
   };

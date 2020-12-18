@@ -39,7 +39,7 @@ export class AgendaRespondController implements LockingAction {
   };
 
   scrollToOffset = (offset: number): void => {
-    console.log('scrollToOffset',offset, !!this.#listRef.current,this.isLocked);
+    // console.log('scrollToOffset',offset, !!this.#listRef.current,this.isLocked);
     if (this.isLocked) return;
     this.startRun();
     this.#listRef.current?.scrollToOffset({ offset });
@@ -52,12 +52,12 @@ export class AgendaRespondController implements LockingAction {
 
   // #region overrides
   lock = (): void => {
-    console.log('______________________ RESPONDER LOCK _____________________');
+    // console.log('______________________ RESPONDER LOCK _____________________');
     this.#locked = true;
   };
 
   unlock = (): void => {
-    console.log('______________________ RESPONDER UNLOCK _____________________');
+    // console.log('______________________ RESPONDER UNLOCK _____________________');
     this.#locked = false;
   };
 

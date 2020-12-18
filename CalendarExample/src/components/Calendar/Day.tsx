@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useContext, useState } from 'react';
-import { Pressable, Text, PressableProps } from 'react-native';
+import { TouchableOpacity, Text, PressableProps } from 'react-native';
 import { isSameDay } from 'date-fns';
 import { Day, isWithinInterval } from '../../utils';
 import { DayControllerCtx } from '../../contexts';
@@ -20,7 +20,7 @@ function DayView({ day }: DayProps): ReactElement {
   const isSelected = isSameDay(day.date, selectedDate);
 
   return (
-    <Pressable
+    <TouchableOpacity
       style={[
         { flex: 1, alignItems: 'center' },
         isSelected ? { backgroundColor: '#99ffdd', borderRadius: 50 } : {},
@@ -33,7 +33,7 @@ function DayView({ day }: DayProps): ReactElement {
       <Text style={[{ color: '#333' }, isSelectable ? {} : { color: 'red' }]}>
         {day.label}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 

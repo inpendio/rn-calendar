@@ -12,7 +12,7 @@ export class AgendaScrollController implements LockingAction {
 
   #listRef: RefObject<FlatList<any>>;
 
-  #timer:number = 0;
+  #timer: number = 0;
 
   constructor(list: RefObject<FlatList<any>>) {
     this.#listRef = list;
@@ -66,7 +66,7 @@ export class AgendaScrollController implements LockingAction {
   };
 
   lock = (): void => {
-    console.log('______________________ SCROLL LOCK _____________________');
+    // console.log('______________________ SCROLL LOCK _____________________');
     this.#locked = true;
     this.#listRef.current?.setNativeProps({
       scrollEnabled: false,
@@ -74,7 +74,7 @@ export class AgendaScrollController implements LockingAction {
   };
 
   unlock = (): void => {
-    console.log('______________________ SCROLL UNLOCK _____________________');
+    // console.log('______________________ SCROLL UNLOCK _____________________');
     this.#locked = false;
     this.#listRef.current?.setNativeProps({
       scrollEnabled: true,
@@ -96,13 +96,13 @@ export class AgendaScrollController implements LockingAction {
   };
 
   onScrollEndDrag = (): void => {
-    if(Platform.OS === 'ios'){
+    if (Platform.OS === 'ios') {
       this.tick(this.onDragEnd, 50);
     }
   };
 
   onMomentumScrollBegin = (): void => {
-    if(Platform.OS==='ios' && this.#timer){
+    if (Platform.OS === 'ios' && this.#timer) {
       clearTimeout(this.#timer);
     }
   };
